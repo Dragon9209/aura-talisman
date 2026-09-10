@@ -12,8 +12,8 @@ import { AddProductForm } from "@/components/forms/inventory/product/add-product
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Dodaj nowy produkt",
-  description: "Dodaj nowy produkt do swojego asortymentu",
+  title: "Добавить новый товар | AURA TALISMAN",
+  description: "Добавление нового изделия или талисмана в каталог",
 }
 
 export default async function NewProductPage(): Promise<JSX.Element> {
@@ -29,7 +29,7 @@ export default async function NewProductPage(): Promise<JSX.Element> {
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Dodaj nowy produkt
+            Добавить новый товар
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -51,7 +51,7 @@ export function RegisteredUsersTableShell({
                 prev.length === data.length ? [] : data.map((row) => row.id)
               )
             }}
-            aria-label="Zaznacz wszystko"
+            aria-label="Выбрать все"
             className="translate-y-[2px]"
           />
         ),
@@ -66,7 +66,7 @@ export function RegisteredUsersTableShell({
                   : prev.filter((id) => id !== row.original.id)
               )
             }}
-            aria-label="Zaznacz rząd"
+            aria-label="Выбрать строку"
             className="translate-y-[2px]"
           />
         ),
@@ -82,13 +82,22 @@ export function RegisteredUsersTableShell({
       {
         accessorKey: "role",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Rola" />
+          <DataTableColumnHeader column={column} title="Роль" />
         ),
+        cell: ({ cell }) => {
+          const role = String(cell.getValue())
+          const isAdmin = role === "administrator"
+          return (
+            <Badge variant={isAdmin ? "default" : "secondary"}>
+              {isAdmin ? "Администратор" : "Покупатель"}
+            </Badge>
+          )
+        },
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Data rejestracji" />
+          <DataTableColumnHeader column={column} title="Дата регистрации" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
@@ -99,7 +108,7 @@ export function RegisteredUsersTableShell({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                aria-label="Rozwiń menu"
+                aria-label="Открыть меню"
                 variant="ghost"
                 className="flex size-8 p-0 data-[state=open]:bg-muted"
               >
@@ -109,11 +118,11 @@ export function RegisteredUsersTableShell({
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href={`/admin/uzytkownicy/${row.original.id}`}>
-                  Edytuj
+                  Редактировать
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-destructive focus:text-destructive"
                 onClick={() => {
                   startTransition(async () => {
                     try {
@@ -126,21 +135,21 @@ export function RegisteredUsersTableShell({
                       switch (message) {
                         case "success":
                           toast({
-                            title: "Użytkownik został usunięty",
+                            title: "Пользователь удален",
                           })
                           break
                         default:
                           toast({
-                            title: "Nie udało się usunąć użytkownika",
-                            description: "Spróbuj ponownie",
+                            title: "Не удалось удалить пользователя",
+                            description: "Попробуйте позже",
                             variant: "destructive",
                           })
                       }
                     } catch (error) {
                       console.error(error)
                       toast({
-                        title: "Coś poszło nie tak",
-                        description: "Spróbuj ponownie",
+                        title: "Ошибка при удалении",
+                        description: "Попробуйте позже",
                         variant: "destructive",
                       })
                     }
@@ -148,7 +157,7 @@ export function RegisteredUsersTableShell({
                 }}
                 disabled={isPending}
               >
-                Usuń
+                Удалить
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -175,12 +184,12 @@ export function RegisteredUsersTableShell({
 
       if (allSucceeded) {
         toast({
-          title: "Wybrani użytkownicy zostali usunięci",
+          title: "Выбранные пользователи удалены",
         })
       } else {
         toast({
-          title: "Niektórzy użytkownicy nie zostali usunięci",
-          description: "Spróbuj ponownie",
+          title: "Некоторые пользователи не были удалены",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -189,8 +198,8 @@ export function RegisteredUsersTableShell({
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -202,11 +211,10 @@ export function RegisteredUsersTableShell({
       columns={columns}
       data={data}
       pageCount={pageCount}
-      // TODO: Fix the filterable columns (email)
       searchableColumns={[
         {
           id: "email",
-          title: "adresy email",
+          title: "email",
         },
       ]}
       newRowLink={`/admin/uzytkownicy/dodaj-uzytkownika`}

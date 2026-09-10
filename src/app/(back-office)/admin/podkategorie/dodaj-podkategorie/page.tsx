@@ -12,8 +12,8 @@ import { AddSubcategoryForm } from "@/components/forms/inventory/subcategory/add
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Dodaj nową podkategorię",
-  description: "Dodaj nową podkategorię produktów w swoim asortymencie",
+  title: "Добавить подкатегорию | AURA TALISMAN",
+  description: "Добавление новой подкатегории товаров",
 }
 
 export default async function NewSubcategoryPage(): Promise<JSX.Element> {
@@ -28,7 +28,7 @@ export default async function NewSubcategoryPage(): Promise<JSX.Element> {
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Dodaj nową podkategorię
+            Добавить новую подкатегорию
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -9,8 +9,7 @@ import { siteConfig } from "@/config/site"
 
 import { cn } from "@/lib/utils"
 
-import {
-  NavigationMenu,
+import { NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
@@ -19,6 +18,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { MainNavItem } from "@/components/nav/store-front/main-nav-item"
+import { TalismanLogo } from "@/components/brand/talisman-logo"
 
 interface MainNavProps {
   items: NavItem[]
@@ -26,20 +26,15 @@ interface MainNavProps {
 
 export function MainNav({ items }: Readonly<MainNavProps>): JSX.Element {
   return (
-    <div className="hidden w-full items-center gap-12 bg-background lg:flex">
-      <Link
-        href="/"
-        className="text-2xl font-semibold uppercase tracking-tight"
-      >
-        {siteConfig.name}
-      </Link>
+    <div className="hidden w-full items-center gap-10 bg-background lg:flex">
+      <TalismanLogo className="mr-2" />
 
       <NavigationMenu>
-        <NavigationMenuList>
+        <NavigationMenuList className="gap-1">
           {items.map((item) =>
             item?.subItems ? (
               <NavigationMenuItem key={item.title}>
-                <NavigationMenuTrigger className="h-auto capitalize tracking-tight text-muted-foreground">
+                <NavigationMenuTrigger className="h-auto font-serif text-[18px] font-normal tracking-[0.02em] text-zinc-800 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 focus:text-amber-800 data-[state=open]:text-amber-800 transition-colors py-2 px-3.5">
                   {item.title}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -60,7 +55,10 @@ export function MainNav({ items }: Readonly<MainNavProps>): JSX.Element {
               <NavigationMenuItem key={item.title}>
                 <Link href={item.href} legacyBehavior passHref>
                   <NavigationMenuLink
-                    className={cn(navigationMenuTriggerStyle(), "h-auto")}
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      "h-auto font-serif text-[18px] font-normal tracking-[0.02em] text-zinc-800 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors py-2 px-3.5"
+                    )}
                   >
                     {item.title}
                   </NavigationMenuLink>
@@ -71,8 +69,8 @@ export function MainNav({ items }: Readonly<MainNavProps>): JSX.Element {
 
           {/* Last item (About us) */}
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="h-auto text-muted-foreground">
-              O nas
+            <NavigationMenuTrigger className="h-auto font-serif text-[18px] font-normal tracking-[0.02em] text-zinc-800 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 focus:text-amber-800 data-[state=open]:text-amber-800 transition-colors py-2 px-3.5">
+              О бренде
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
@@ -88,25 +86,25 @@ export function MainNav({ items }: Readonly<MainNavProps>): JSX.Element {
                       <p className="text-xs leading-tight text-muted-foreground">
                         <Balancer>{siteConfig.description}</Balancer>
                       </p>
-                      <span className="sr-only">Home</span>
+                      <span className="sr-only">Главная</span>
                     </Link>
                   </NavigationMenuLink>
                 </li>
-                <MainNavItem title="Kim jesteśmy" href="/kim-jestesmy">
+                <MainNavItem title="О мастере" href="/">
                   {
-                    "Poznaj naszą historię i dowiedz się dlaczego warto u nas kupować"
+                    "История создания авторских талисманов и философия ручной работы"
                   }
                 </MainNavItem>
 
-                <MainNavItem title="Nasza misja" href="/misja">
+                <MainNavItem title="Энергия минералов" href="/">
                   {
-                    "Odkryj czym się kierujemy oraz co jest dla nas naprawdę ważne"
+                    "Как лавовый камень, агат и минералы влияют на внутреннее состояние"
                   }
                 </MainNavItem>
 
-                <MainNavItem title="Blog" href="/blog">
+                <MainNavItem title="Гид по камням" href="/">
                   {
-                    "Korzystaj z naszego cennego doświadczenia i obszernej wiedzy"
+                    "Подбор талисманов по дате рождения и знакам зодиака"
                   }
                 </MainNavItem>
               </ul>

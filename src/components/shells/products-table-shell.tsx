@@ -63,7 +63,7 @@ export function ProductsTableShell({
                 prev.length === data.length ? [] : data.map((row) => row.id)
               )
             }}
-            aria-label="Zaznacz wszystko"
+            aria-label="Выбрать все"
             className="translate-y-[2px]"
           />
         ),
@@ -78,7 +78,7 @@ export function ProductsTableShell({
                   : prev.filter((id) => id !== row.original.id)
               )
             }}
-            aria-label="Zaznacz rząd"
+            aria-label="Выбрать строку"
             className="translate-y-[2px]"
           />
         ),
@@ -88,23 +88,25 @@ export function ProductsTableShell({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Nazwa" />
+          <DataTableColumnHeader column={column} title="Название" />
         ),
       },
       {
         accessorKey: "state",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Status" />
+          <DataTableColumnHeader column={column} title="Статус" />
         ),
         cell: ({ cell }) => {
-          const states = Object.values(products.state.enumValues)
           const state = cell.getValue() as Product["state"]
-
-          if (!states.includes(state)) return null
-
+          const stateLabels: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+            aktywny: { label: "Активен", variant: "default" },
+            roboczy: { label: "Черновик", variant: "secondary" },
+            zarchiwizowany: { label: "В архиве", variant: "outline" },
+          }
+          const item = stateLabels[state] ?? { label: state, variant: "secondary" }
           return (
-            <Badge variant="secondary" className="capitalize">
-              {state}
+            <Badge variant={item.variant}>
+              {item.label}
             </Badge>
           )
         },
@@ -112,19 +114,14 @@ export function ProductsTableShell({
       {
         accessorKey: "importance",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Priorytet" />
+          <DataTableColumnHeader column={column} title="Приоритет" />
         ),
         cell: ({ cell }) => {
-          const importanceOptions = Object.values(
-            products.importance.enumValues
-          )
           const importance = cell.getValue() as Product["importance"]
-
-          if (!importanceOptions.includes(importance)) return null
-
+          const isFeatured = importance === "wyróżniony"
           return (
-            <Badge variant="secondary" className="capitalize">
-              {importance}
+            <Badge variant={isFeatured ? "default" : "outline"}>
+              {isFeatured ? "В топе" : "Обычный"}
             </Badge>
           )
         },
@@ -132,51 +129,42 @@ export function ProductsTableShell({
       {
         accessorKey: "categoryName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Kategoria" />
+          <DataTableColumnHeader column={column} title="Категория" />
         ),
+        cell: ({ cell }) => {
+          const raw = String(cell.getValue())
+          const catMap: Record<string, string> = {
+            bransoletki: "Браслеты",
+            chetki: "Чётки и Малы",
+            naszyjniki: "Чокеры и Колье",
+            kolczyki: "Серьги и Кольца",
+          }
+          return <span>{catMap[raw] ?? raw}</span>
+        },
       },
       {
         accessorKey: "subcategoryName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Podkategoria" />
+          <DataTableColumnHeader column={column} title="Подкатегория" />
         ),
       },
-      // {
-      //   accessorKey: "category",
-      //   header: ({ column }) => (
-      //     <DataTableColumnHeader column={column} title="Kategoria" />
-      //   ),
-      //   cell: ({ cell }) => {
-      //     const categories = Object.values(products.category.enumValues)
-      //     const category = cell.getValue() as Product["category"]
-
-      //     if (!categories.includes(category)) return null
-
-      //     return (
-      //       <Badge variant="outline" className="capitalize">
-      //         {category}
-      //       </Badge>
-      //     )
-      //   },
-      // },
-
       {
         accessorKey: "price",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Cena" />
+          <DataTableColumnHeader column={column} title="Цена" />
         ),
         cell: ({ cell }) => formatPrice(cell.getValue() as number),
       },
       {
         accessorKey: "inventory",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Dostępność" />
+          <DataTableColumnHeader column={column} title="Остаток" />
         ),
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Data dodania" />
+          <DataTableColumnHeader column={column} title="Дата создания" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
@@ -187,7 +175,7 @@ export function ProductsTableShell({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                aria-label="Rozwiń menu"
+                aria-label="Открыть меню"
                 variant="ghost"
                 className="flex size-8 p-0 data-[state=open]:bg-muted"
               >
@@ -196,10 +184,10 @@ export function ProductsTableShell({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild className="cursor-pointer">
-                <Link href={`/admin/produkty/${row.original.id}`}>Edytuj</Link>
+                <Link href={`/admin/produkty/${row.original.id}`}>Редактировать</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-destructive focus:text-destructive"
                 onClick={() => {
                   startTransition(async () => {
                     try {
@@ -212,21 +200,21 @@ export function ProductsTableShell({
                       switch (message) {
                         case "success":
                           toast({
-                            title: "Produkt został usunięty",
+                            title: "Товар удален",
                           })
                           break
                         default:
                           toast({
-                            title: "Nie udało się usunąć produktu",
-                            description: "Spróbuj ponownie",
+                            title: "Не удалось удалить товар",
+                            description: "Попробуйте позже",
                             variant: "destructive",
                           })
                       }
                     } catch (error) {
                       console.error(error)
                       toast({
-                        title: "Coś poszło nie tak",
-                        description: "Spróbuj ponownie",
+                        title: "Ошибка при удалении",
+                        description: "Попробуйте позже",
                         variant: "destructive",
                       })
                     }
@@ -234,7 +222,7 @@ export function ProductsTableShell({
                 }}
                 disabled={isPending}
               >
-                Usuń
+                Удалить
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -261,12 +249,12 @@ export function ProductsTableShell({
 
       if (allSucceeded) {
         toast({
-          title: "Wybrane produkty zostały usunięte",
+          title: "Выбранные товары удалены",
         })
       } else {
         toast({
-          title: "Niektóre produkty nie zostały usunięte",
-          description: "Spróbuj ponownie",
+          title: "Некоторые товары не были удалены",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -275,8 +263,8 @@ export function ProductsTableShell({
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -301,7 +289,7 @@ export function ProductsTableShell({
       searchableColumns={[
         {
           id: "name",
-          title: "names",
+          title: "товарам",
         },
       ]}
       newRowLink={`/admin/produkty/dodaj-produkt`}

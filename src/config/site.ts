@@ -10,19 +10,20 @@ const links = {
 }
 
 export const siteConfig = {
-  name: "MM Bijou",
+  name: "AURA TALISMAN",
   description:
-    "Wyjątkowa biżuteria na każdą okazję. Mariusz to klasa sama w sobie.",
+    "Авторские энергетические браслеты, чётки и талисманы из натуральных камней ручной работы.",
   links,
-  url: "https://mm_bijou.pl",
+  url: "http://localhost:3001",
   ogImage: links.openGraphImage,
-  author: "@pjborowiecki",
-  hostingRegion: "fra1",
+  author: "Aura Studio",
+  hostingRegion: "kz",
   keywords: [
-    "Biżuteria",
-    "Sklep jubilerski",
-    "Jubiler",
-    "Jubiler Bochnia",
-    "Jubiler Kraków",
+    "Энергетические браслеты",
+    "Чётки из лавы",
+    "Натуральные камни",
+    "Талисманы и амулеты",
+    "Браслеты по знакам зодиака",
+    "Украшения ручной работы",
   ],
 }

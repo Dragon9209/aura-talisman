@@ -12,8 +12,8 @@ import { UpdateUserAsAdminForm } from "@/components/forms/user/update-user-as-ad
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Dane użytkownika",
-  description: "Zobacz i edytuj dane użytkownika",
+  title: "Данные пользователя | AURA TALISMAN",
+  description: "Просмотр и редактирование данных пользователя",
 }
 
 interface AdminRegisteredUserPageProps {
@@ -37,7 +37,7 @@ export default async function AdminRegisteredUserPage({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            {`Dane użytkownika ${user.email}`}
+            {`Профиль пользователя: ${user.email}`}
           </CardTitle>
         </CardHeader>
         <CardContent>

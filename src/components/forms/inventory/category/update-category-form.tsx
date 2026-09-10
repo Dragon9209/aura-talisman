@@ -110,35 +110,35 @@ export function UpdateCategoryForm({
         switch (message) {
           case "invalid-input":
             toast({
-              title: "Nieprawidłowy typ danych wejściowych",
+              title: "Неверный формат введенных данных",
               variant: "destructive",
             })
             break
           case "not-found":
             toast({
-              title: "Nie znaleziono kategorii",
-              description: "Kategoria o podanym numerze Id nie istnieje",
+              title: "Категория не найдена",
+              description: "Категория с указанным ID не существует",
               variant: "destructive",
             })
             break
           case "success":
             toast({
-              title: "Kategoria została zaktualizowana",
+              title: "Категория успешно обновлена",
             })
             router.push("/admin/kategorie")
             break
           default:
             toast({
-              title: "Nie udało się zaktualizować kategorii",
-              description: "Spróbuj ponownie",
+              title: "Не удалось обновить категорию",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
         }
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте снова",
           variant: "destructive",
         })
       }
@@ -152,7 +152,7 @@ export function UpdateCategoryForm({
         onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <FormItem className="w-full md:w-4/5 xl:w-2/3">
-          <FormLabel>Id</FormLabel>
+          <FormLabel>ID категории</FormLabel>
           <FormControl>
             <Input
               type="text"
@@ -164,11 +164,11 @@ export function UpdateCategoryForm({
         </FormItem>
 
         <FormItem className="w-full md:w-4/5 xl:w-2/3">
-          <FormLabel>Nazwa</FormLabel>
+          <FormLabel>Название</FormLabel>
           <FormControl>
             <Input
               type="text"
-              placeholder="Np. kolczyki"
+              placeholder="Напр. Браслеты"
               defaultValue={category.name}
               {...form.register("name")}
             />
@@ -183,10 +183,10 @@ export function UpdateCategoryForm({
           name="description"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Opis</FormLabel>
+              <FormLabel>Описание</FormLabel>
               <FormControl className="min-h-[120px]">
                 <Textarea
-                  placeholder="Opis kategorii (opcjonalnie)"
+                  placeholder="Описание категории (необязательно)"
                   defaultValue={category.description ?? ""}
                   {...field}
                 />
@@ -203,7 +203,7 @@ export function UpdateCategoryForm({
           name="visibility"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Widoczność w menu</FormLabel>
+              <FormLabel>Видимость в каталоге</FormLabel>
               <FormControl>
                 <Select
                   value={field.value}
@@ -219,7 +219,11 @@ export function UpdateCategoryForm({
                       {Object.values(categories.visibility.enumValues).map(
                         (option) => (
                           <SelectItem key={option} value={option}>
-                            {option}
+                            {option === "widoczna"
+                              ? "Отображается в каталоге"
+                              : option === "ukryta"
+                                ? "Скрыта"
+                                : option}
                           </SelectItem>
                         )
                       )}
@@ -234,7 +238,7 @@ export function UpdateCategoryForm({
         />
 
         <FormItem className="mt-2.5 flex w-full flex-col gap-[5px] md:w-4/5 xl:w-2/3">
-          <FormLabel>Zdjęcia</FormLabel>
+          <FormLabel>Баннер / Фотография</FormLabel>
           {files?.length ? (
             <div className="flex items-center gap-2">
               {files.map((file, i) => (
@@ -270,7 +274,7 @@ export function UpdateCategoryForm({
         <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isUpdating}
-            aria-label="zapisz zmiany"
+            aria-label="сохранить изменения"
             className="w-fit"
           >
             {isUpdating ? (
@@ -279,20 +283,20 @@ export function UpdateCategoryForm({
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>Zapisywanie...</span>
+                <span>Сохранение...</span>
               </>
             ) : (
-              <span>Zapisz zmiany</span>
+              <span>Сохранить изменения</span>
             )}
-            <span className="sr-only">Zapisz zmiany</span>
+            <span className="sr-only">Сохранить изменения</span>
           </Button>
 
           <Link
             href="/admin/kategorie"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
-            aria-label="anuluj"
+            aria-label="отмена"
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

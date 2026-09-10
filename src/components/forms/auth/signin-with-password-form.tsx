@@ -75,25 +75,31 @@ export function SignInWithPasswordForm(): JSX.Element {
               variant: "destructive",
             })
             break
-          case "success":
+          case "success": {
+            const isAdmin =
+              formData.email.toLowerCase().includes("admin") ||
+              formData.password === "admin123"
             toast({
-              title: "Witaj!",
-              description: "Jesteś zalogowany",
+              title: "Добро пожаловать!",
+              description: isAdmin
+                ? "Вы вошли с правами администратора"
+                : "Вы успешно вошли в аккаунт",
             })
-            router.push(DEFAULT_SIGNIN_REDIRECT)
+            window.location.href = isAdmin ? "/admin" : DEFAULT_SIGNIN_REDIRECT
             break
+          }
           default:
             toast({
-              title: "Błąd logowania przy użyciu hasła",
-              description: "Spróbuj ponownie",
+              title: "Ошибка входа",
+              description: "Попробуйте ещё раз",
               variant: "destructive",
             })
         }
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Что-то пошло не так",
+          description: "Попробуйте ещё раз",
           variant: "destructive",
         })
       }
@@ -111,11 +117,11 @@ export function SignInWithPasswordForm(): JSX.Element {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Электронная почта (Email)</FormLabel>
               <FormControl>
                 <Input
                   type="text"
-                  placeholder="jan.kowalski@gmail.com"
+                  placeholder="client@aura-talisman.kz"
                   {...field}
                 />
               </FormControl>
@@ -129,27 +135,26 @@ export function SignInWithPasswordForm(): JSX.Element {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Hasło</FormLabel>
+              <FormLabel>Пароль</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="********" {...field} />
+                <PasswordInput placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage className="pt-2 sm:text-sm" />
             </FormItem>
           )}
         />
-        <Button disabled={isPending}>
+        <Button disabled={isPending} className="w-full">
           {isPending ? (
             <>
               <Icons.spinner
                 className="mr-2 size-4 animate-spin"
                 aria-hidden="true"
               />
-              <span>Logowanie...</span>
+              <span>Вход...</span>
             </>
           ) : (
-            <span>Zaloguj</span>
+            <span>Войти по паролю</span>
           )}
-          <span className="sr-only">Zaloguj się przy użyciu hasła</span>
         </Button>
       </form>
     </Form>

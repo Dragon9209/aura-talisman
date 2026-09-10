@@ -44,15 +44,37 @@ export function Header({ user, navItems }: Readonly<HeaderProps>): JSX.Element {
                 </Link>
               )
             })}
+            <div className="my-2 border-t pt-2">
+              <Link
+                href="/admin/ustawienia"
+                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              >
+                <Icons.settings className="size-5" />
+                <span>Настройки магазина</span>
+              </Link>
+            </div>
           </nav>
         </SheetContent>
       </Sheet>
+
+      <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground font-medium">
+        <Link
+          href="/admin"
+          className="font-bold text-foreground tracking-tight hover:text-amber-600 transition-colors"
+        >
+          AURA TALISMAN
+        </Link>
+        <span className="text-zinc-300 dark:text-zinc-700">/</span>
+        <span className="text-xs bg-amber-500/15 text-amber-800 dark:text-amber-300 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">
+          Панель управления
+        </span>
+      </div>
 
       <div className="relative ml-auto flex-1 md:grow-0">
         <Icons.search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Szukaj..."
+          placeholder="Поиск по магазину..."
           className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
         />
       </div>

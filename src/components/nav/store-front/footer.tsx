@@ -41,8 +41,7 @@ export function Footer(): JSX.Element {
         <div className="hidden flex-col gap-5 sm:flex sm:w-1/3 xl:pl-24">
           <p className="pl-2.5 text-sm font-medium !leading-[140%] tracking-tight 2xl:text-base">
             <Balancer>
-              Dołącz do naszego newslettera, bądź na bieżąco i nigdy nie przegap
-              okazji!
+              Подпишитесь на закрытые новинки авторских талисманов и силу камней
             </Balancer>
           </p>
 
@@ -53,7 +52,7 @@ export function Footer(): JSX.Element {
       <div className="mx-auto flex w-full max-w-7xl items-center px-8">
         <p className="!text-xs text-muted-foreground xl:text-base">
           <Balancer>
-            &copy; 2024 MM Bijou. Wszystkie prawa zastrzeżone.
+            &copy; 2024 AURA TALISMAN. Все права защищены.
           </Balancer>
         </p>
       </div>

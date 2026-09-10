@@ -11,8 +11,8 @@ import { AddUserAsAdminForm } from "@/components/forms/user/add-user-as-admin-fo
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Dodaj nowego użytkownika",
-  description: "Dodaj nowego użytkownika jako administrator",
+  title: "Добавить пользователя | AURA TALISMAN",
+  description: "Создание учетной записи пользователя или администратора",
 }
 
 export default async function AdminAddUserPage(): Promise<JSX.Element> {
@@ -25,7 +25,7 @@ export default async function AdminAddUserPage(): Promise<JSX.Element> {
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Dodaj nowego użytkownika
+            Добавить нового пользователя
           </CardTitle>
         </CardHeader>
         <CardContent>

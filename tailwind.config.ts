@@ -15,8 +15,10 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        inter: ["var(--font-inter)"],
-        heading: ["var(--font-heading)"],
+        sans: ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        inter: ["var(--font-inter)", "sans-serif"],
+        heading: ["var(--font-heading)", "Georgia", "serif"],
+        serif: ["var(--font-heading)", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

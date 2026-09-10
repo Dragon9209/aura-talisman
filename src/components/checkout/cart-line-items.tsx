@@ -87,7 +87,7 @@ export function CartLineItems({
                     </span>
                   )}
                   {variant === "default" ? (
-                    <span className="line-clamp-1 text-xs capitalize text-muted-foreground">
+                    <span className="line-clamp-1 text-xs text-muted-foreground">
                       {`${item.categoryName} ${
                         item.subcategoryName ? `/ ${item.subcategoryName}` : ""
                       }`}

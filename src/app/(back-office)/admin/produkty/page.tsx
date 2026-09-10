@@ -7,10 +7,11 @@ import { endOfDay, startOfDay } from "date-fns"
 import { and, asc, desc, gte, like, lte, sql } from "drizzle-orm"
 
 import { env } from "@/env.mjs"
-import { db } from "@/config/db"
+import { db, isDbConfigured } from "@/config/db"
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/config/defaults"
 import { products, type Product } from "@/db/schema"
 import { storeProductsSearchParamsSchema } from "@/validations/params"
+import { mockProducts } from "@/data/mock-store-data"
 
 import auth from "@/lib/auth"
 
@@ -21,8 +22,8 @@ import { ProductsTableShell } from "@/components/shells/products-table-shell"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Produkty",
-  description: "Zarządzaj produktami w swoim asortymencie",
+  title: "Товары и талисманы | AURA TALISMAN",
+  description: "Управление каталогом изделий и остатками",
 }
 
 interface ProductsPageProps {
@@ -58,72 +59,107 @@ export default async function ProductsPage({
     "asc" | "desc" | undefined,
   ]) ?? ["createdAt", "desc"]
 
-  noStore()
-  const data = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      state: products.state,
-      importance: products.importance,
-      price: products.price,
-      inventory: products.inventory,
-      categoryName: products.categoryName,
-      subcategoryName: products.subcategoryName,
-      createdAt: products.createdAt,
-      updatedAt: products.updatedAt,
-    })
-    .from(products)
-    .limit(limit)
-    .offset(offset)
-    .where(
-      and(
-        name ? like(products.name, `%${name}%`) : undefined,
-        categoryName
-          ? like(products.categoryName, `%${categoryName}%`)
-          : undefined,
-        subcategoryName
-          ? like(products.subcategoryName, `%${subcategoryName}%`)
-          : undefined,
-        fromDay && toDay
-          ? and(
-              gte(products.createdAt, fromDay),
-              lte(products.createdAt, toDay)
-            )
-          : undefined
-      )
-    )
-    .orderBy(
-      column && column in products
-        ? order === "asc"
-          ? asc(products[column])
-          : desc(products[column])
-        : desc(products.createdAt)
-    )
+  let data: any[] = []
+  let count = 0
 
-  noStore()
-  const count = await db
-    .select({
-      count: sql<number>`count(${products.id})`,
-    })
-    .from(products)
-    .where(
-      and(
-        name ? like(products.name, `%${name}%`) : undefined,
-        categoryName
-          ? like(products.categoryName, `%${categoryName}%`)
-          : undefined,
-        subcategoryName
-          ? like(products.subcategoryName, `%${subcategoryName}%`)
-          : undefined,
-        fromDay && toDay
-          ? and(
-              gte(products.createdAt, fromDay),
-              lte(products.createdAt, toDay)
-            )
-          : undefined
-      )
-    )
-    .then((res) => res[0]?.count ?? 0)
+  if (!isDbConfigured) {
+    data = mockProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      state: p.state,
+      importance: p.importance,
+      price: p.price,
+      inventory: p.inventory,
+      categoryName: p.categoryName,
+      subcategoryName: p.subcategoryName,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }))
+    count = data.length
+  } else {
+    try {
+      noStore()
+      data = await db
+        .select({
+          id: products.id,
+          name: products.name,
+          state: products.state,
+          importance: products.importance,
+          price: products.price,
+          inventory: products.inventory,
+          categoryName: products.categoryName,
+          subcategoryName: products.subcategoryName,
+          createdAt: products.createdAt,
+          updatedAt: products.updatedAt,
+        })
+        .from(products)
+        .limit(limit)
+        .offset(offset)
+        .where(
+          and(
+            name ? like(products.name, `%${name}%`) : undefined,
+            categoryName
+              ? like(products.categoryName, `%${categoryName}%`)
+              : undefined,
+            subcategoryName
+              ? like(products.subcategoryName, `%${subcategoryName}%`)
+              : undefined,
+            fromDay && toDay
+              ? and(
+                  gte(products.createdAt, fromDay),
+                  lte(products.createdAt, toDay)
+                )
+              : undefined
+          )
+        )
+        .orderBy(
+          column && column in products
+            ? order === "asc"
+              ? asc(products[column])
+              : desc(products[column])
+            : desc(products.createdAt)
+        )
+
+      noStore()
+      count = await db
+        .select({
+          count: sql<number>`count(${products.id})`,
+        })
+        .from(products)
+        .where(
+          and(
+            name ? like(products.name, `%${name}%`) : undefined,
+            categoryName
+              ? like(products.categoryName, `%${categoryName}%`)
+              : undefined,
+            subcategoryName
+              ? like(products.subcategoryName, `%${subcategoryName}%`)
+              : undefined,
+            fromDay && toDay
+              ? and(
+                  gte(products.createdAt, fromDay),
+                  lte(products.createdAt, toDay)
+                )
+              : undefined
+          )
+        )
+        .then((res) => res[0]?.count ?? 0)
+    } catch (error) {
+      data = mockProducts.map((p) => ({
+        id: p.id,
+        name: p.name,
+        state: p.state,
+        importance: p.importance,
+        price: p.price,
+        inventory: p.inventory,
+        categoryName: p.categoryName,
+        subcategoryName: p.subcategoryName,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+      }))
+      count = data.length
+    }
+  }
 
   const pageCount = Math.ceil(count / limit)
 
@@ -133,7 +169,7 @@ export default async function ProductsPage({
         <CardHeader className="space-y-1">
           <CardTitle className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
             <div className="text-xl font-bold tracking-tight md:text-2xl">
-              Produkty
+              Товары и минералы
             </div>
             <DateRangePicker align="end" />
           </CardTitle>

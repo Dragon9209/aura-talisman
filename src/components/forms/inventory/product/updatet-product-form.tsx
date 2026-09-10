@@ -139,36 +139,36 @@ export function UpdateProductForm({
         switch (message) {
           case "success":
             toast({
-              title: "Produkt został zaktualizowany",
+              title: "Товар успешно обновлен",
             })
             setFiles(null)
             router.push("/admin/produkty")
             break
           case "not-found":
             toast({
-              title: "Nie znaleziono produktu",
-              description: "Produkt o podanym numerze Id nie istnieje",
+              title: "Товар не найден",
+              description: "Товар с указанным ID не существует",
               variant: "destructive",
             })
             break
           case "invalid-input":
             toast({
-              title: "Nieprawidłowy typ danych wejściowych",
+              title: "Неверный формат введенных данных",
               variant: "destructive",
             })
             break
           default:
             toast({
-              title: "Nie udało się zaktualizować produktu",
-              description: "Spróbuj ponownie",
+              title: "Не удалось обновить товар",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
         }
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте снова",
           variant: "destructive",
         })
       }
@@ -182,7 +182,7 @@ export function UpdateProductForm({
         onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <FormItem className="w-full md:w-4/5 xl:w-2/3">
-          <FormLabel>Id</FormLabel>
+          <FormLabel>ID товара</FormLabel>
           <FormControl>
             <Input
               type="text"
@@ -194,11 +194,11 @@ export function UpdateProductForm({
         </FormItem>
 
         <FormItem className="w-full md:w-4/5 xl:w-2/3">
-          <FormLabel>Nazwa</FormLabel>
+          <FormLabel>Название</FormLabel>
           <FormControl>
             <Input
               aria-invalid={!!form.formState.errors.name}
-              placeholder="Nazwa produktu"
+              placeholder="Название изделия"
               defaultValue={product.name}
               {...form.register("name")}
             />
@@ -213,10 +213,10 @@ export function UpdateProductForm({
           name="description"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Opis</FormLabel>
+              <FormLabel>Описание</FormLabel>
               <FormControl className="min-h-[120px]">
                 <Textarea
-                  placeholder="Opis produktu (opcjonalnie)"
+                  placeholder="Описание изделия (необязательно)"
                   defaultValue={product.description ?? ""}
                   {...field}
                 />
@@ -234,7 +234,7 @@ export function UpdateProductForm({
             name="state"
             render={({ field }) => (
               <FormItem className="w-full md:w-4/5 xl:w-2/3">
-                <FormLabel>Status</FormLabel>
+                <FormLabel>Статус наличия</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -245,7 +245,7 @@ export function UpdateProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz kategorię"}
+                        placeholder={field.value || "Выберите статус"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -253,7 +253,13 @@ export function UpdateProductForm({
                         {Object.values(products.state.enumValues).map(
                           (option) => (
                             <SelectItem key={option} value={option}>
-                              {option}
+                              {option === "aktywny"
+                                ? "Активен"
+                                : option === "roboczy"
+                                  ? "Черновик"
+                                  : (option as string) === "zarchiwizowany" || (option as string) === "archiwalny"
+                                    ? "В архиве"
+                                    : option}
                             </SelectItem>
                           )
                         )}
@@ -274,7 +280,7 @@ export function UpdateProductForm({
             name="importance"
             render={({ field }) => (
               <FormItem className="w-full md:w-4/5 xl:w-2/3">
-                <FormLabel>Status</FormLabel>
+                <FormLabel>Приоритет</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -285,7 +291,7 @@ export function UpdateProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz priorytet"}
+                        placeholder={field.value || "Выберите приоритет"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -293,7 +299,13 @@ export function UpdateProductForm({
                         {Object.values(products.importance.enumValues).map(
                           (option) => (
                             <SelectItem key={option} value={option}>
-                              {option}
+                              {option === "standardowy"
+                                ? "Стандартный"
+                                : option === "wyróżniony"
+                                  ? "Популярный (Хит)"
+                                  : option === "bestseller"
+                                    ? "Бестселлер"
+                                    : option}
                             </SelectItem>
                           )
                         )}
@@ -316,7 +328,7 @@ export function UpdateProductForm({
             name="categoryName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Kategoria</FormLabel>
+                <FormLabel>Категория</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -332,14 +344,22 @@ export function UpdateProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz kategorię"}
+                        placeholder={field.value || "Выберите категорию"}
                       />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         {categories?.map((category) => (
                           <SelectItem key={category.id} value={category.name}>
-                            {category.name}
+                            {category.name === "bransoletki"
+                              ? "Браслеты"
+                              : category.name === "chetki"
+                                ? "Чётки и Малы"
+                                : category.name === "naszyjniki"
+                                  ? "Чокеры и Колье"
+                                  : category.name === "kolczyki"
+                                    ? "Серьги и Кольца"
+                                    : category.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -359,7 +379,7 @@ export function UpdateProductForm({
             name="subcategoryName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Podkategoria</FormLabel>
+                <FormLabel>Подкатегория</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -369,7 +389,7 @@ export function UpdateProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz podkategorię"}
+                        placeholder={field.value || "Выберите подкатегорию"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -397,10 +417,10 @@ export function UpdateProductForm({
 
         <div className="flex w-full flex-col items-start gap-6 sm:flex-row md:w-4/5 xl:w-2/3">
           <FormItem className="w-full">
-            <FormLabel>Cena</FormLabel>
+            <FormLabel>Цена (₸)</FormLabel>
             <FormControl>
               <Input
-                placeholder="Np. 499.99"
+                placeholder="Например, 18500"
                 defaultValue={product.price}
                 {...form.register("price")}
               />
@@ -411,12 +431,12 @@ export function UpdateProductForm({
           </FormItem>
 
           <FormItem className="w-full">
-            <FormLabel>Dostępność</FormLabel>
+            <FormLabel>Количество на складе (шт.)</FormLabel>
             <FormControl>
               <Input
                 type="number"
                 inputMode="numeric"
-                placeholder="Ilość w magazynie"
+                placeholder="Остаток на складе"
                 {...form.register("inventory", {
                   valueAsNumber: true,
                 })}
@@ -430,11 +450,10 @@ export function UpdateProductForm({
         </div>
 
         <FormItem className="mt-2.5 flex w-full flex-col gap-[5px] md:w-4/5 xl:w-2/3">
-          <FormLabel>Zdjęcia</FormLabel>
+          <FormLabel>Фотографии изделия</FormLabel>
           {files?.length ? (
             <div className="flex items-center gap-2">
               {files.map((file, i) => {
-                console.log(file.preview)
                 return (
                   <Zoom key={i}>
                     <Image
@@ -469,7 +488,7 @@ export function UpdateProductForm({
         <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isUpdating}
-            aria-label="zapisz zmiany"
+            aria-label="сохранить изменения"
             className="w-fit"
           >
             {isUpdating ? (
@@ -478,20 +497,20 @@ export function UpdateProductForm({
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>Zapisywanie ...</span>
+                <span>Сохранение...</span>
               </>
             ) : (
-              <span>Zapisz zmiany</span>
+              <span>Сохранить изменения</span>
             )}
-            <span className="sr-only">Zapisz zmiany</span>
+            <span className="sr-only">Сохранить изменения</span>
           </Button>
 
           <Link
             href="/admin/produkty"
             className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
-            aria-label="anuluj"
+            aria-label="отмена"
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

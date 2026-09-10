@@ -15,14 +15,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { OAuthButtons } from "@/components/auth/oauth-buttons"
+import { DemoLoginButtons } from "@/components/auth/demo-login-buttons"
 import { SignInWithPasswordForm } from "@/components/forms/auth/signin-with-password-form"
 import { Icons } from "@/components/icons"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Logowanie",
-  description: "Zaloguj się aby wygodniej zamawiać i śledzić zamówienia",
+  title: "Вход в аккаунт",
+  description: "Войдите в личный кабинет AURA TALISMAN",
 }
 
 export default async function SignInPage(): Promise<JSX.Element> {
@@ -30,58 +30,39 @@ export default async function SignInPage(): Promise<JSX.Element> {
   if (session) redirect(DEFAULT_SIGNIN_REDIRECT)
 
   return (
-    <div className="flex h-auto min-h-screen w-full items-center justify-center">
-      <Card className="bg-background max-sm:flex  max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
+    <div className="flex h-auto min-h-screen w-full items-center justify-center py-12">
+      <Card className="bg-background max-sm:flex max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[400px] sm:max-w-[420px] shadow-lg">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Logowanie</CardTitle>
-            <Link href="/">
-              <Icons.close className="size-4" />
+            <CardTitle className="text-2xl font-serif tracking-wide">Вход в аккаунт</CardTitle>
+            <Link href="/" title="На главную">
+              <Icons.close className="size-4 text-muted-foreground hover:text-foreground" />
             </Link>
           </div>
           <CardDescription>
-            Zaloguj się i odkryj pełnię korzyści
+            Личный кабинет AURA TALISMAN и доступ к заказам
           </CardDescription>
         </CardHeader>
-        <CardContent className="max-sm:w-full max-sm:max-w-[340px] max-sm:px-10">
-          <OAuthButtons />
-          <div className="relative">
+        <CardContent className="space-y-4 max-sm:w-full max-sm:max-w-[340px] max-sm:px-6">
+          <DemoLoginButtons />
+
+          <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
-            <div className="relative mb-3 mt-6 flex justify-center text-xs uppercase">
-              <span className="bg-background px-3 font-medium tracking-tight">
-                Lub kontynuuj z hasłem
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-3 font-medium text-muted-foreground">
+                или обычный вход по email
               </span>
             </div>
           </div>
+
           <SignInWithPasswordForm />
         </CardContent>
 
-        <CardFooter className="grid w-full text-sm text-muted-foreground max-sm:max-w-[340px] max-sm:px-10">
-          <div>
-            <span>Nie posiadasz konta? </span>
-            <Link
-              aria-label="Rejestracja"
-              href="/rejestracja"
-              className="font-bold tracking-wide text-primary underline-offset-4 transition-colors hover:underline"
-            >
-              Załóż konto
-              <span className="sr-only">Załóż konto</span>
-            </Link>
-            .
-          </div>
-          <div>
-            <span>Zapomniałeś hasła? </span>
-            <Link
-              aria-label="Resetowanie hasła"
-              href="/logowanie/haslo-reset"
-              className="text-sm font-normal text-primary underline-offset-4 transition-colors hover:underline"
-            >
-              Zresetuj hasło
-              <span className="sr-only">Zresetuj hasło</span>
-            </Link>
-            .
+        <CardFooter className="grid w-full text-sm text-muted-foreground max-sm:max-w-[340px] max-sm:px-6 border-t pt-4">
+          <div className="text-center text-xs text-muted-foreground">
+            Тестовые аккаунты работают мгновенно без базы данных.
           </div>
         </CardFooter>
       </Card>

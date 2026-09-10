@@ -113,30 +113,30 @@ export function AddProductForm({
         switch (message) {
           case "exists":
             toast({
-              title: "Produkt o podanej nazwie już istnieje",
-              description: "Użyj innej nazwy",
+              title: "Товар с таким названием уже существует",
+              description: "Используйте другое название",
               variant: "destructive",
             })
             break
           case "success":
             toast({
-              title: "Produkt został dodany",
+              title: "Товар успешно добавлен",
             })
             router.push("/admin/produkty")
             router.refresh()
             break
           default:
             toast({
-              title: "Błąd przy dodawaniu produktu",
-              description: "Spróbuj ponownie",
+              title: "Ошибка при добавлении товара",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
         }
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте снова",
           variant: "destructive",
         })
       }
@@ -154,9 +154,9 @@ export function AddProductForm({
           name="name"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Nazwa</FormLabel>
+              <FormLabel>Название</FormLabel>
               <FormControl>
-                <Input placeholder="Np. kolczyki pozłacane" {...field} />
+                <Input placeholder="Напр. Браслет «Сила Вулкана»" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -168,11 +168,11 @@ export function AddProductForm({
           name="description"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Opis</FormLabel>
+              <FormLabel>Описание</FormLabel>
 
               <FormControl className="min-h-[120px]">
                 <Textarea
-                  placeholder="Opis produktu (opcjonalnie)"
+                  placeholder="Описание изделия (необязательно)"
                   {...field}
                 />
               </FormControl>
@@ -187,7 +187,7 @@ export function AddProductForm({
             name="state"
             render={({ field }) => (
               <FormItem className="w-full md:w-4/5 xl:w-2/3">
-                <FormLabel>Status</FormLabel>
+                <FormLabel>Статус</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -198,7 +198,7 @@ export function AddProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz kategorię"}
+                        placeholder={field.value || "Выберите статус"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -206,7 +206,13 @@ export function AddProductForm({
                         {Object.values(products.state.enumValues).map(
                           (option) => (
                             <SelectItem key={option} value={option}>
-                              {option}
+                              {option === "aktywny"
+                                ? "Активен"
+                                : option === "roboczy"
+                                  ? "Черновик"
+                                  : (option as string) === "zarchiwizowany" || (option as string) === "archiwalny"
+                                    ? "В архиве"
+                                    : option}
                             </SelectItem>
                           )
                         )}
@@ -227,7 +233,7 @@ export function AddProductForm({
             name="importance"
             render={({ field }) => (
               <FormItem className="w-full md:w-4/5 xl:w-2/3">
-                <FormLabel>Priorytet</FormLabel>
+                <FormLabel>Приоритет</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -238,7 +244,7 @@ export function AddProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz priorytet"}
+                        placeholder={field.value || "Выберите приоритет"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -246,7 +252,13 @@ export function AddProductForm({
                         {Object.values(products.importance.enumValues).map(
                           (option) => (
                             <SelectItem key={option} value={option}>
-                              {option}
+                              {option === "standardowy"
+                                ? "Стандартный"
+                                : option === "wyróżniony"
+                                  ? "Популярный (Хит)"
+                                  : option === "bestseller"
+                                    ? "Бестселлер"
+                                    : option}
                             </SelectItem>
                           )
                         )}
@@ -269,7 +281,7 @@ export function AddProductForm({
             name="categoryName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Kategoria</FormLabel>
+                <FormLabel>Категория</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -285,14 +297,22 @@ export function AddProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz kategorię"}
+                        placeholder={field.value || "Выберите категорию"}
                       />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         {categories?.map((category) => (
                           <SelectItem key={category.id} value={category.name}>
-                            {category.name}
+                            {category.name === "bransoletki"
+                              ? "Браслеты"
+                              : category.name === "chetki"
+                                ? "Чётки и Малы"
+                                : category.name === "naszyjniki"
+                                  ? "Чокеры и Колье"
+                                  : category.name === "kolczyki"
+                                    ? "Серьги и Кольца"
+                                    : category.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -312,7 +332,7 @@ export function AddProductForm({
             name="subcategoryName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Podkategoria</FormLabel>
+                <FormLabel>Подкатегория</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -323,7 +343,7 @@ export function AddProductForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={field.value || "Wybierz podkategorię"}
+                        placeholder={field.value || "Выберите подкатегорию"}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -355,12 +375,12 @@ export function AddProductForm({
             name="price"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Cena</FormLabel>
+                <FormLabel>Цена (₸)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     inputMode="numeric"
-                    placeholder="Np. 499.99"
+                    placeholder="Напр. 18500"
                     value={field.value}
                     onChange={field.onChange}
                   />
@@ -375,12 +395,12 @@ export function AddProductForm({
             name="inventory"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Dostępność</FormLabel>
+                <FormLabel>Количество на складе (шт.)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     inputMode="numeric"
-                    placeholder="Ilość w magazynie"
+                    placeholder="Остаток на складе"
                     value={Number.isNaN(field.value) ? "" : field.value}
                     onChange={(e) => field.onChange(e.target.valueAsNumber)}
                   />
@@ -397,7 +417,7 @@ export function AddProductForm({
           name="images"
           render={() => (
             <FormItem className="mt-2.5 flex w-full flex-col gap-[5px] md:w-4/5 xl:w-2/3">
-              <FormLabel>Zdjęcia</FormLabel>
+              <FormLabel>Фотографии изделия</FormLabel>
               {files?.length ? (
                 <div className="flex items-center gap-2">
                   {files.map((file, i) => (
@@ -440,21 +460,21 @@ export function AddProductForm({
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span aria-hidden="true">Dodawanie...</span>
+                <span aria-hidden="true">Добавление...</span>
               </>
             ) : (
-              <span>Dodaj</span>
+              <span>Добавить</span>
             )}
 
-            <span className="sr-only">Dodaj produkt</span>
+            <span className="sr-only">Добавить товар</span>
           </Button>
 
           <Link
             href="/admin/produkty"
             className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
-            aria-label="anuluj"
+            aria-label="отмена"
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

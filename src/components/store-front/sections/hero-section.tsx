@@ -1,9 +1,9 @@
-import { HeroCarousel } from "@/components/store-front/hero-carousel"
+import { HeroVariantC } from "@/components/store-front/hero-variant-c"
 
 export function HeroSection(): JSX.Element {
   return (
-    <section className="w-full">
-      <HeroCarousel />
-    </section>
+    <div className="w-full">
+      <HeroVariantC />
+    </div>
   )
 }

@@ -6,13 +6,13 @@ export const stripePaymentStatuses: {
   label: string
   value: StripePaymentStatus
 }[] = [
-  { label: "Anulowano", value: "canceled" },
-  { label: "Przetwarzanie", value: "processing" },
-  { label: "Wymaga działania", value: "requires_action" },
-  { label: "Wymaga zatwierdzenia", value: "requires_capture" },
-  { label: "Wymaga potwierdzenia", value: "requires_confirmation" },
-  { label: "Wymaga metody płatności", value: "requires_payment_method" },
-  { label: "Zakończono sukcesem", value: "succeeded" },
+  { label: "Отменен", value: "canceled" },
+  { label: "В обработке", value: "processing" },
+  { label: "Требует действия", value: "requires_action" },
+  { label: "Ожидает списания", value: "requires_capture" },
+  { label: "Требует подтверждения", value: "requires_confirmation" },
+  { label: "Ожидает оплаты", value: "requires_payment_method" },
+  { label: "Оплачен успешно", value: "succeeded" },
 ]
 
 export function getStripePaymentStatusColor({

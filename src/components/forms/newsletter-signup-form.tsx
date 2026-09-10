@@ -43,29 +43,29 @@ export function NewsletterSignUpForm(): JSX.Element {
         switch (message) {
           case "exists":
             toast({
-              title: "Jesteś już subskrybentem newslettera",
+              title: "Вы уже подписаны на рассылку",
               variant: "destructive",
             })
             form.reset()
             break
           case "success":
             toast({
-              title: "Dziękujemy!",
-              description: "Zostałeś dopisany do listy naszych subskrybentów",
+              title: "Благодарим за подписку!",
+              description: "Вам открыт доступ к закрытым коллекциям и новинкам",
             })
             form.reset()
             break
           default:
             toast({
-              title: "Coś poszło nie tak",
-              description: "Spróbuj ponownie",
+              title: "Произошла ошибка",
+              description: "Попробуйте снова",
               variant: "destructive",
             })
         }
       } catch (error) {
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте снова",
           variant: "destructive",
         })
       }
@@ -87,7 +87,7 @@ export function NewsletterSignUpForm(): JSX.Element {
               <FormControl className="rounded-full rounded-r-none">
                 <Input
                   type="email"
-                  placeholder="jan.kowalski@gmail.com"
+                  placeholder="ваш@email.com"
                   className="h-8 placeholder:text-xs md:h-10 md:placeholder:text-sm"
                   {...field}
                 />

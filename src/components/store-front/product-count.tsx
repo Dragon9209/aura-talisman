@@ -12,8 +12,7 @@ export function ProductCount({
       variant="secondary"
       className="pointer-events-none w-fit rounded font-medium"
     >
-      {/* TODO: Polish endings */}
-      {count} produktów
+      {count} изделий
     </Badge>
   )
 }

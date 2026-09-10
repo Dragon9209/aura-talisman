@@ -92,30 +92,30 @@ export function AddCategoryForm(): JSX.Element {
         switch (message) {
           case "exists":
             toast({
-              title: "Podana kategoria już istnieje",
-              description: "Użyj innej nazwy",
+              title: "Такая категория уже существует",
+              description: "Используйте другое название",
               variant: "destructive",
             })
             break
           case "success":
             toast({
-              title: "Kategoria została dodana",
+              title: "Категория успешно добавлена",
             })
             router.push("/admin/kategorie")
             router.refresh()
             break
           default:
             toast({
-              title: "Błąd przy dodawaniu kategorii",
-              description: "Spróbuj ponownie",
+              title: "Ошибка при добавлении категории",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
         }
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -133,9 +133,9 @@ export function AddCategoryForm(): JSX.Element {
           name="name"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Nazwa</FormLabel>
+              <FormLabel>Название</FormLabel>
               <FormControl>
-                <Input type="text" placeholder="Np. kolczyki" {...field} />
+                <Input type="text" placeholder="Напр. Браслеты" {...field} />
               </FormControl>
               <FormMessage className="sm:text-sm" />
             </FormItem>
@@ -147,11 +147,11 @@ export function AddCategoryForm(): JSX.Element {
           name="description"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Opis</FormLabel>
+              <FormLabel>Описание</FormLabel>
 
               <FormControl className="min-h-[120px]">
                 <Textarea
-                  placeholder="Opis kategorii (opcjonalnie)"
+                  placeholder="Описание категории (необязательно)"
                   {...field}
                 />
               </FormControl>
@@ -165,7 +165,7 @@ export function AddCategoryForm(): JSX.Element {
           name="visibility"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Widoczność w menu</FormLabel>
+              <FormLabel>Видимость в каталоге</FormLabel>
               <FormControl>
                 <Select
                   value={field.value}
@@ -174,14 +174,14 @@ export function AddCategoryForm(): JSX.Element {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={field.value} />
+                    <SelectValue placeholder={field.value === "widoczna" ? "Отображается" : "Скрыта"} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       {Object.values(categories.visibility.enumValues).map(
                         (option) => (
                           <SelectItem key={option} value={option}>
-                            {option}
+                            {option === "widoczna" ? "Отображается" : "Скрыта"}
                           </SelectItem>
                         )
                       )}
@@ -200,7 +200,7 @@ export function AddCategoryForm(): JSX.Element {
           name="images"
           render={() => (
             <FormItem className="mt-2.5 flex w-full flex-col gap-[5px] md:w-4/5 xl:w-2/3">
-              <FormLabel>Zdjęcia</FormLabel>
+              <FormLabel>Изображение</FormLabel>
               {files?.length ? (
                 <div className="flex items-center gap-2">
                   {files.map((file, i) => (
@@ -238,7 +238,7 @@ export function AddCategoryForm(): JSX.Element {
         <div className=" flex items-center gap-2 pt-2">
           <Button
             disabled={isPending}
-            aria-label="Dodaj kategorię"
+            aria-label="Добавить категорию"
             className="w-fit"
           >
             {isPending ? (
@@ -247,19 +247,19 @@ export function AddCategoryForm(): JSX.Element {
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>Dodawanie...</span>
+                <span>Сохранение...</span>
               </>
             ) : (
-              <span>Dodaj</span>
+              <span>Добавить</span>
             )}
-            <span className="sr-only">Dodaj kategorię</span>
+            <span className="sr-only">Добавить категорию</span>
           </Button>
 
           <Link
             href="/admin/kategorie"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

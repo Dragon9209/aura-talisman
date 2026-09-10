@@ -34,7 +34,7 @@ export async function CartSheet(): Promise<JSX.Element> {
     <Sheet>
       <SheetTrigger asChild className="transition-all duration-300 ease-in-out">
         <Button
-          aria-label="Pokaż koszyk"
+          aria-label="Открыть корзину"
           variant="outline"
           size="icon"
           className="relative size-8 shrink-0"
@@ -52,7 +52,7 @@ export async function CartSheet(): Promise<JSX.Element> {
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col pr-0 transition-all duration-300 ease-in-out sm:max-w-lg">
         <SheetHeader className="space-y-2.5 pr-6">
-          <SheetTitle>Koszyk {itemCount > 0 && `(${itemCount})`}</SheetTitle>
+          <SheetTitle>Корзина {itemCount > 0 && `(${itemCount})`}</SheetTitle>
           <Separator />
         </SheetHeader>
 
@@ -63,29 +63,29 @@ export async function CartSheet(): Promise<JSX.Element> {
               <Separator />
               <div className="space-y-1.5 text-sm">
                 <div className="flex">
-                  <span className="flex-1">Wysyłka</span>
-                  <span>Gratis</span>
+                  <span className="flex-1">Доставка по Казахстану</span>
+                  <span className="font-medium text-emerald-600">Бесплатно</span>
                 </div>
                 <div className="flex">
-                  <span className="flex-1">VAT</span>
-                  <span>Przejdź do podsumowania</span>
+                  <span className="flex-1">Подарочный мешочек</span>
+                  <span>В подарок</span>
                 </div>
-                <div className="flex">
-                  <span className="flex-1">Suma</span>
+                <div className="flex text-base font-semibold">
+                  <span className="flex-1">Итого</span>
                   <span>{formatPrice(cartTotal.toFixed(2))}</span>
                 </div>
               </div>
               <SheetFooter>
                 <SheetTrigger asChild>
                   <Link
-                    aria-label="View your cart"
-                    href="/cart"
+                    aria-label="Перейти к оформлению"
+                    href="/checkout"
                     className={buttonVariants({
                       size: "sm",
-                      className: "w-full",
+                      className: "w-full rounded-full py-2.5",
                     })}
                   >
-                    Przejdź do podsumowania
+                    Перейти к оформлению
                   </Link>
                 </SheetTrigger>
               </SheetFooter>
@@ -98,19 +98,19 @@ export async function CartSheet(): Promise<JSX.Element> {
               aria-hidden="true"
             />
             <p className="text-xl font-medium text-muted-foreground">
-              Twój koszyk jest pusty
+              Ваша корзина пока пуста
             </p>
 
             <SheetTrigger asChild>
               <Link
                 href="/produkty"
-                aria-label="Wybierz i dodaj produkty by kontynuować"
+                aria-label="Выбрать изделия в каталоге"
                 className={cn(
                   buttonVariants({ variant: "link", size: "sm" }),
                   "text-sm text-muted-foreground"
                 )}
               >
-                Wybierz i dodaj produkty by kontynuować
+                Выбрать браслеты и талисманы
               </Link>
             </SheetTrigger>
           </div>

@@ -40,7 +40,7 @@ export function CustomersTableShell({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Name" />
+          <DataTableColumnHeader column={column} title="Покупатель" />
         ),
       },
       {
@@ -52,7 +52,7 @@ export function CustomersTableShell({
       {
         accessorKey: "totalSpent",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Total Spent" />
+          <DataTableColumnHeader column={column} title="Сумма покупок" />
         ),
         cell: ({ cell }) =>
           formatPrice(cell.getValue() as number, {
@@ -62,13 +62,13 @@ export function CustomersTableShell({
       {
         accessorKey: "orderPlaced",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Order Placed" />
+          <DataTableColumnHeader column={column} title="Заказов" />
         ),
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Created At" />
+          <DataTableColumnHeader column={column} title="Первый заказ" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
@@ -76,24 +76,22 @@ export function CustomersTableShell({
       {
         id: "actions",
         cell: ({ row }) => {
-          const slug = row.original.email
-            ?.replace("@", `-${Math.random().toString(36).substring(2, 10)}-`)
-            .replace(".com", "")
+          const customerParam = encodeURIComponent(row.original.email ?? "customer")
 
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  aria-label="Zobacz więcej"
+                  aria-label="Открыть меню"
                   variant="ghost"
                   className="flex size-8 p-0 data-[state=open]:bg-muted"
                 >
                   <DotsHorizontalIcon className="size-4" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuContent align="end" className="w-[170px]">
                 <DropdownMenuItem asChild>
-                  <Link href={`/admin/klienci/${slug}`}>Zobacz zamówienia</Link>
+                  <Link href={`/admin/klienci/${customerParam}`}>История заказов</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -112,7 +110,7 @@ export function CustomersTableShell({
       searchableColumns={[
         {
           id: "email",
-          title: "emails",
+          title: "клиентам",
         },
       ]}
     />

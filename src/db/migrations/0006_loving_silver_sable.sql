@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "purity" varchar(16);

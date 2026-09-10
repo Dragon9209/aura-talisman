@@ -14,24 +14,8 @@ export const metadata: Metadata = {
   description: "Zaloguj się aby zobaczyć zawartość koszyka",
 }
 
+import { redirect } from "next/navigation"
+
 export default function CartPage(): JSX.Element {
-  // TODO: Style the headings and the shell
-  return (
-    <div id="shell">
-      <div id="heading">
-        <div>Finalizowanie zamówienia</div>
-        <div>Przejdź do kasy by sfinalizować zamówienie</div>
-      </div>
-
-      {/* TODO: */}
-      <CheckoutCard />
-
-      {/* TODO: Empty card */}
-      <section
-        id="cart-page-empty-cart"
-        aria-label="Koszk jest pusty"
-        className="flex h-full flex-col items-center justify-center space-y-1"
-      ></section>
-    </div>
-  )
+  redirect("/checkout")
 }

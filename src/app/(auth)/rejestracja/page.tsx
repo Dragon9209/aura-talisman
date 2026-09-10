@@ -21,9 +21,9 @@ import { Icons } from "@/components/icons"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Zakładanie konta",
+  title: "Создание аккаунта",
   description:
-    "Załóż konto w naszym sklepie aby wygodniej zamawiać i śledzić zamówienia",
+    "Зарегистрируйтесь в нашем магазине для отслеживания заказов и персональных скидок",
 }
 
 export default async function SignUpPage(): Promise<JSX.Element> {
@@ -35,13 +35,13 @@ export default async function SignUpPage(): Promise<JSX.Element> {
       <Card className="max-sm:flex max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Zakładanie konta</CardTitle>
+            <CardTitle className="font-serif text-2xl">Создание аккаунта</CardTitle>
             <Link href="/">
               <Icons.close className="size-4" />
             </Link>
           </div>
           <CardDescription>
-            Wybierz preferowaną metodę rejestracji
+            Выберите удобный способ регистрации
           </CardDescription>
         </CardHeader>
         <CardContent className="max-sm:w-full max-sm:max-w-[340px] max-sm:px-10">
@@ -52,7 +52,7 @@ export default async function SignUpPage(): Promise<JSX.Element> {
             </div>
             <div className="relative mb-3 mt-6 flex justify-center text-xs uppercase">
               <span className="bg-background px-3 font-medium tracking-tight">
-                Lub kontynuuj z hasłem
+                Или по паролю
               </span>
             </div>
           </div>
@@ -61,51 +61,28 @@ export default async function SignUpPage(): Promise<JSX.Element> {
         <CardFooter className="grid w-full gap-4 text-sm text-muted-foreground max-sm:max-w-[340px] max-sm:px-10">
           <div>
             <div>
-              <span>Posiadasz już konto? </span>
+              <span>Уже есть аккаунт? </span>
               <Link
-                aria-label="Zaloguj się"
+                aria-label="Войти"
                 href="/logowanie"
                 className="font-bold tracking-wide text-primary underline-offset-4 transition-all hover:underline"
               >
-                Zaloguj się
-                <span className="sr-only">Zaloguj się</span>
-              </Link>
-              .
-            </div>
-            <div>
-              <span>Zgubiłeś link weryfikacyjny? </span>
-              <Link
-                aria-label="Resend email verification link"
-                href="/rejestracja/potwierdz-email-ponownie"
-                className="text-sm font-normal text-primary underline-offset-4 transition-colors hover:underline"
-              >
-                Wyślij ponownie
-                <span className="sr-only">
-                  Wyślij link weryfikacyjny ponownie
-                </span>
+                Войти
+                <span className="sr-only">Войти</span>
               </Link>
               .
             </div>
           </div>
 
           <div className="text-sm text-muted-foreground md:text-xs">
-            Kontynuując zakładanie konta, akceptujesz naszą <br />
+            Регистрируясь, вы принимаете нашу <br />
             <Link
-              aria-label="Regulamin sklepu"
+              aria-label="Политика конфиденциальности"
               href="/polityka-prywatnosci"
               className="font-semibold underline-offset-4 transition-all hover:underline"
             >
-              politykę prywatności
-            </Link>{" "}
-            oraz{" "}
-            <Link
-              aria-label="Polityka prywatnosci"
-              href="/regulamin-sklepu"
-              className="font-semibold underline-offset-4 transition-all hover:underline"
-            >
-              regulamin sklepu
+              политику конфиденциальности
             </Link>
-            .
           </div>
         </CardFooter>
       </Card>

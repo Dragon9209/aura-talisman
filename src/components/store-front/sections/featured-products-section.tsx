@@ -19,7 +19,7 @@ export function FeaturedProductsSection({
     <section className="w-full space-y-5">
       <div className="flex items-center justify-between gap-4">
         <h2 className="font-semibold leading-[1.1] md:text-xl">
-          Polecane produkty
+          Рекомендуемые талисманы
         </h2>
         <Link
           href="/produkty"
@@ -28,9 +28,9 @@ export function FeaturedProductsSection({
             "flex items-center justify-center gap-2"
           )}
         >
-          Zobacz wszystkie
+          Смотреть все
           <Icons.arrowRight className="size-4" />
-          <span className="sr-only">Zobacz wszystkie</span>
+          <span className="sr-only">Смотреть все</span>
         </Link>
       </div>
 

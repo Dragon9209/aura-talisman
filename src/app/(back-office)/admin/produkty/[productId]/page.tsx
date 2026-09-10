@@ -13,8 +13,8 @@ import { UpdateProductForm } from "@/components/forms/inventory/product/updatet-
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Szczegóły produktu",
-  description: "Zobacz i edytuj dane swojego produktu",
+  title: "Редактирование товара | AURA TALISMAN",
+  description: "Просмотр и редактирование данных товара",
 }
 
 interface AdminProductPage {
@@ -42,7 +42,7 @@ export default async function AdminProductPage({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Szczegóły produktu
+            Редактирование товара
           </CardTitle>
         </CardHeader>
         <CardContent>

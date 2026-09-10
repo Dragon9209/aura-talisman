@@ -49,8 +49,15 @@ export async function CategoryCard({
         </CardHeader>
         <CardContent>
           <div className="flex flex-1 flex-col space-y-1.5">
-            <CardTitle className="text-lg font-semibold capitalize">
-              {category.name}
+            <CardTitle className="text-lg font-semibold">
+              {{
+                naszyjniki: "Чокеры и колье",
+                kolczyki: "Серьги-минералы",
+                bransoletki: "Браслеты-талисманы",
+                pierscionki: "Кольца и самоцветы",
+                chetki: "Чётки и малы",
+                inne: "Амулеты и обереги",
+              }[category.name] ?? category.name}
             </CardTitle>
 
             <React.Suspense

@@ -66,7 +66,7 @@ export function UserDropdown({
                     className="mr-2 size-4 text-foreground/90"
                     aria-hidden="true"
                   />
-                  Ustawienia
+                  Настройки
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
@@ -75,7 +75,7 @@ export function UserDropdown({
                     className="mr-2 size-4 text-foreground/90"
                     aria-hidden="true"
                   />
-                  Zamówienia
+                  Мои заказы
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
@@ -84,7 +84,7 @@ export function UserDropdown({
                     className="mr-2 size-4 text-foreground/90"
                     aria-hidden="true"
                   />
-                  Ulubione
+                  Избранное
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -97,9 +97,9 @@ export function UserDropdown({
                     asChild
                     className="cursor-pointer bg-secondary"
                   >
-                    <Link href="/admin/zamowienia" className="">
+                    <Link href="/admin" className="">
                       <Icons.dashboard className="mr-2 size-4" />
-                      Panel administratora
+                      Панель управления (Админ)
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -120,10 +120,10 @@ export function UserDropdown({
           href="/logowanie"
           className={cn(
             buttonVariants({ variant: "outline", size: "sm" }),
-            "rounded-full"
+            "rounded-full px-4"
           )}
         >
-          Zaloguj się
+          Войти
         </Link>
       )}
     </>

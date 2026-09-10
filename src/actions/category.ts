@@ -4,7 +4,7 @@ import { unstable_noStore as noStore, revalidatePath } from "next/cache"
 import type { StoredFile } from "@/types"
 import { and, eq, not } from "drizzle-orm"
 
-import { db } from "@/config/db"
+import { db, isDbConfigured } from "@/config/db"
 import {
   psCheckIfCategoryExists,
   psCheckIfCategoryNameTaken,
@@ -20,6 +20,7 @@ import {
   psGetSubcategoryById,
   psGetSubcategoryByName,
 } from "@/db/prepared-statements/category"
+import { mockCategories, mockSubcategories } from "@/data/mock-store-data"
 import {
   categories,
   subcategories,
@@ -64,96 +65,110 @@ import { generateId } from "@/lib/utils"
 export async function getCategoryById(
   rawInput: GetCategoryByIdInput
 ): Promise<Category | null> {
-  try {
-    const validatedInput = getCategoryByIdSchema.safeParse(rawInput)
-    if (!validatedInput.success) return null
+  const validatedInput = getCategoryByIdSchema.safeParse(rawInput)
+  if (!validatedInput.success) return null
 
+  if (!isDbConfigured) {
+    return mockCategories.find((c) => c.id === rawInput.id) || mockCategories[0] || null
+  }
+
+  try {
     noStore()
     const [category] = await psGetCategoryById.execute({
       id: validatedInput.data.id,
     })
-    return category || null
+    return category || mockCategories.find((c) => c.id === rawInput.id) || mockCategories[0] || null
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting category by Id")
+    return mockCategories.find((c) => c.id === rawInput.id) || mockCategories[0] || null
   }
 }
 
 export async function getSubcategoryById(
   rawInput: GetSubcategoryByIdInput
 ): Promise<Subcategory | null> {
-  try {
-    const validatedInput = getSubcategoryByIdSchema.safeParse(rawInput)
-    if (!validatedInput.success) return null
+  const validatedInput = getSubcategoryByIdSchema.safeParse(rawInput)
+  if (!validatedInput.success) return null
 
+  if (!isDbConfigured) {
+    return mockSubcategories.find((s) => s.id === rawInput.id) || mockSubcategories[0] || null
+  }
+
+  try {
     noStore()
-    const [category] = await psGetSubcategoryById.execute({
+    const [subcategory] = await psGetSubcategoryById.execute({
       id: validatedInput.data.id,
     })
-    return category || null
+    return subcategory || mockSubcategories.find((s) => s.id === rawInput.id) || mockSubcategories[0] || null
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting subcategory by Id")
+    return mockSubcategories.find((s) => s.id === rawInput.id) || mockSubcategories[0] || null
   }
 }
 
 export async function getCategoryByName(
   rawInput: GetCategoryByNameInput
 ): Promise<Category | null> {
-  try {
-    const validatedInput = getCategoryByNameSchema.safeParse(rawInput)
-    if (!validatedInput.success) return null
+  const validatedInput = getCategoryByNameSchema.safeParse(rawInput)
+  if (!validatedInput.success) return null
 
+  if (!isDbConfigured) {
+    return mockCategories.find((c) => c.name.toLowerCase() === rawInput.name.toLowerCase()) || null
+  }
+
+  try {
     noStore()
     const [category] = await psGetCategoryByName.execute({
       name: validatedInput.data.name,
     })
 
-    return category || null
+    return category || mockCategories.find((c) => c.name.toLowerCase() === rawInput.name.toLowerCase()) || null
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting category by name")
+    return mockCategories.find((c) => c.name.toLowerCase() === rawInput.name.toLowerCase()) || null
   }
 }
 
 export async function getSubcategoryByName(
   rawInput: GetSubcategoryByNameInput
 ): Promise<Subcategory | null> {
-  try {
-    const validatedInput = getSubcategoryByNameSchema.safeParse(rawInput)
-    if (!validatedInput.success) return null
+  const validatedInput = getSubcategoryByNameSchema.safeParse(rawInput)
+  if (!validatedInput.success) return null
 
+  if (!isDbConfigured) {
+    return mockSubcategories.find((s) => s.name.toLowerCase() === rawInput.name.toLowerCase()) || null
+  }
+
+  try {
     noStore()
     const [subcategory] = await psGetSubcategoryByName.execute({
       name: validatedInput.data.name,
     })
 
-    return subcategory || null
+    return subcategory || mockSubcategories.find((s) => s.name.toLowerCase() === rawInput.name.toLowerCase()) || null
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting subcategory by name")
+    return mockSubcategories.find((s) => s.name.toLowerCase() === rawInput.name.toLowerCase()) || null
   }
 }
 
 export async function getAllCategories(): Promise<Category[]> {
+  if (!isDbConfigured) return mockCategories
   try {
     noStore()
     const categories = await psGetAllCategories.execute()
-    return categories
+    return categories && categories.length > 0 ? categories : mockCategories
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting all categories")
+    return mockCategories
   }
 }
 
 export async function getAllSubcategories(): Promise<Subcategory[]> {
+  if (!isDbConfigured) return mockSubcategories
   try {
     noStore()
     const subcategories = await psGetAllSubcategories.execute()
-    return subcategories
+    return subcategories && subcategories.length > 0
+      ? subcategories
+      : mockSubcategories
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting all subcategories")
+    return mockSubcategories
   }
 }
 
@@ -201,10 +216,14 @@ export async function getSubcategoriesByCategoryName(
 export async function checkIfCategoryNameTaken(
   rawInput: CheckIfCategoryNameTakenInput
 ): Promise<"invalid-input" | boolean> {
-  try {
-    const validatedInput = checkIfCategoryNameTakenSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = checkIfCategoryNameTakenSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    return mockCategories.some((c) => c.name.toLowerCase() === validatedInput.data.name.toLowerCase())
+  }
+
+  try {
     noStore()
     const nameTaken = await psCheckIfCategoryNameTaken.execute({
       name: validatedInput.data.name,
@@ -212,18 +231,21 @@ export async function checkIfCategoryNameTaken(
 
     return nameTaken ? true : false
   } catch (error) {
-    console.error(error)
-    throw new Error("Error checking if category name taken")
+    return mockCategories.some((c) => c.name.toLowerCase() === validatedInput.data.name.toLowerCase())
   }
 }
 
 export async function checkIfCategoryExists(
   rawInput: CheckIfCategoryExistsInput
 ): Promise<"invalid-input" | boolean> {
-  try {
-    const validatedInput = checkIfCategoryExistsSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = checkIfCategoryExistsSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    return mockCategories.some((c) => c.id === validatedInput.data.id)
+  }
+
+  try {
     noStore()
     const exists = await psCheckIfCategoryExists.execute({
       id: validatedInput.data.id,
@@ -231,18 +253,21 @@ export async function checkIfCategoryExists(
 
     return exists ? true : false
   } catch (error) {
-    console.error(error)
-    throw new Error("Error checking if category exists")
+    return mockCategories.some((c) => c.id === validatedInput.data.id)
   }
 }
 
 export async function checkIfSubcategoryExists(
   rawInput: CheckIfSubcategoryExistsInput
 ): Promise<"invalid-input" | boolean> {
-  try {
-    const validatedInput = checkIfSubcategoryExistsSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = checkIfSubcategoryExistsSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    return mockSubcategories.some((s) => s.id === validatedInput.data.id)
+  }
+
+  try {
     noStore()
     const exists = await psCheckIfSubcategoryExists.execute({
       id: validatedInput.data.id,
@@ -250,18 +275,36 @@ export async function checkIfSubcategoryExists(
 
     return exists ? true : false
   } catch (error) {
-    console.error(error)
-    throw new Error("Error checking if subcategory exists")
+    return mockSubcategories.some((s) => s.id === validatedInput.data.id)
   }
 }
 
 export async function addCategory(
   rawInput: AddCategoryInput
 ): Promise<"invalid-input" | "exists" | "error" | "success"> {
-  try {
-    const validatedInput = addCategoryFunctionSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = addCategoryFunctionSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const exists = mockCategories.some(
+      (c) => c.name.toLowerCase() === validatedInput.data.name.toLowerCase()
+    )
+    if (exists) return "exists"
+    mockCategories.push({
+      id: generateId(),
+      name: validatedInput.data.name.toLowerCase(),
+      description: validatedInput.data.description ?? null,
+      visibility: validatedInput.data.visibility,
+      images: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    revalidatePath("/")
+    revalidatePath("/admin/kategorie")
+    return "success"
+  }
+
+  try {
     noStore()
     const nameTaken = await psCheckIfCategoryNameTaken.execute({
       name: validatedInput.data.name.toLowerCase(),
@@ -285,17 +328,37 @@ export async function addCategory(
     return newCategory ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error adding category")
+    return "error"
   }
 }
 
 export async function addSubcategory(
   rawInput: AddSubcategoryInput
 ): Promise<"invalid-input" | "exists" | "error" | "success"> {
-  try {
-    const validatedInput = addSubcategorySchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = addSubcategorySchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const exists = mockSubcategories.some(
+      (s) =>
+        s.name.toLowerCase() === validatedInput.data.name.toLowerCase() &&
+        s.categoryName === validatedInput.data.categoryName
+    )
+    if (exists) return "exists"
+    mockSubcategories.push({
+      id: generateId(),
+      name: validatedInput.data.name.toLowerCase(),
+      description: validatedInput.data.description ?? null,
+      categoryName: validatedInput.data.categoryName,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    revalidatePath("/")
+    revalidatePath("/admin/podkategorie")
+    return "success"
+  }
+
+  try {
     noStore()
     const nameTaken = await db.query.subcategories.findFirst({
       columns: {
@@ -325,17 +388,24 @@ export async function addSubcategory(
     return newCategory ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error adding subcategory")
+    return "error"
   }
 }
 
 export async function deleteCategory(
   rawInput: DeleteCategoryInput
 ): Promise<"invalid-input" | "error" | "success"> {
-  try {
-    const validatedInput = deleteCategorySchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = deleteCategorySchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const idx = mockCategories.findIndex((c) => c.id === validatedInput.data.id)
+    if (idx !== -1) mockCategories.splice(idx, 1)
+    revalidatePath("/admin/kategorie")
+    return "success"
+  }
+
+  try {
     const deleted = await psDeleteCategoryById.execute({
       id: validatedInput.data.id,
     })
@@ -344,17 +414,24 @@ export async function deleteCategory(
     return deleted ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error deleting category")
+    return "error"
   }
 }
 
 export async function deleteSubcategory(
   rawInput: DeleteSubcategoryInput
 ): Promise<"invalid-input" | "error" | "success"> {
-  try {
-    const validatedInput = deleteSubcategorySchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = deleteSubcategorySchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const idx = mockSubcategories.findIndex((s) => s.id === validatedInput.data.id)
+    if (idx !== -1) mockSubcategories.splice(idx, 1)
+    revalidatePath("/admin/podkategorie")
+    return "success"
+  }
+
+  try {
     const deleted = await psDeleteSubcategoryById.execute({
       id: validatedInput.data.id,
     })
@@ -363,21 +440,35 @@ export async function deleteSubcategory(
     return deleted ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error deleting subcategory")
+    return "error"
   }
 }
 
 export async function updateCategory(
   rawInput: UpdateCategoryInput
 ): Promise<"invalid-input" | "not-found" | "error" | "success"> {
-  try {
-    const validatedInput = updateCategorySchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = updateCategorySchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const idx = mockCategories.findIndex((c) => c.id === validatedInput.data.id)
+    if (idx === -1) return "not-found"
+    mockCategories[idx] = {
+      ...mockCategories[idx],
+      name: validatedInput.data.name,
+      description: validatedInput.data.description,
+      visibility: validatedInput.data.visibility,
+      updatedAt: new Date(),
+    }
+    revalidatePath("/")
+    revalidatePath("/admin/kategorie")
+    return "success"
+  }
+
+  try {
     const exists = await checkIfCategoryExists({ id: validatedInput.data.id })
     if (!exists || exists === "invalid-input") return "not-found"
 
-    // TODO: Handle image update
     noStore()
     const updatedCategory = await db
       .update(categories)
@@ -395,17 +486,31 @@ export async function updateCategory(
     return updatedCategory ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error updating category")
+    return "error"
   }
 }
 
 export async function updateSubcategory(
   rawInput: UpdateSubcategoryInput
 ): Promise<"invalid-input" | "not-found" | "exists" | "error" | "success"> {
-  try {
-    const validatedInput = updateSubcategorySchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = updateSubcategorySchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const idx = mockSubcategories.findIndex((s) => s.id === validatedInput.data.id)
+    if (idx === -1) return "not-found"
+    mockSubcategories[idx] = {
+      ...mockSubcategories[idx],
+      name: validatedInput.data.name,
+      description: validatedInput.data.description,
+      updatedAt: new Date(),
+    }
+    revalidatePath("/")
+    revalidatePath("/admin/podkategorie")
+    return "success"
+  }
+
+  try {
     const exists = await checkIfSubcategoryExists({
       id: validatedInput.data.id,
     })
@@ -441,6 +546,6 @@ export async function updateSubcategory(
     return updatedSubcategory ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error updating subcategory")
+    return "error"
   }
 }

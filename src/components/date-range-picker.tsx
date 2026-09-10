@@ -3,7 +3,7 @@
 import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { addDays, format } from "date-fns"
-import { pl } from "date-fns/locale"
+import { ru } from "date-fns/locale"
 import type { DateRange } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
@@ -95,20 +95,20 @@ export function DateRangePicker({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y", { locale: pl })} -{" "}
-                  {format(date.to, "LLL dd, y", { locale: pl })}
+                  {format(date.from, "d MMM yyyy", { locale: ru })} -{" "}
+                  {format(date.to, "d MMM yyyy", { locale: ru })}
                 </>
               ) : (
-                format(date.from, "LLL dd, y", { locale: pl })
+                format(date.from, "d MMM yyyy", { locale: ru })
               )
             ) : (
-              <span>Wybierz przedział</span>
+              <span>Выберите период</span>
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className={cn("w-auto p-0", className)} {...props}>
           <Calendar
-            locale={pl}
+            locale={ru}
             initialFocus
             mode="range"
             defaultMonth={date?.from}

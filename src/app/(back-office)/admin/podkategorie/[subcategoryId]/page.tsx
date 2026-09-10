@@ -12,8 +12,8 @@ import { UpdateSubcategoryForm } from "@/components/forms/inventory/subcategory/
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Szczegóły podkategorii",
-  description: "Zobacz i edytuj podkategorię produktów",
+  title: "Редактирование подкатегории | AURA TALISMAN",
+  description: "Просмотр и редактирование параметров подкатегории",
 }
 
 interface AdminSubcategoryPageProps {
@@ -37,7 +37,7 @@ export default async function AdminSubcategoryPage({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Szczegóły podkategorii
+            Редактирование подкатегории
           </CardTitle>
         </CardHeader>
         <CardContent>

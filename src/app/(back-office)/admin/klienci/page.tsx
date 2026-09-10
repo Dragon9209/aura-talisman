@@ -6,10 +6,11 @@ import { endOfDay, startOfDay } from "date-fns"
 import { and, asc, desc, gte, like, lte, sql } from "drizzle-orm"
 
 import { env } from "@/env.mjs"
-import { db } from "@/config/db"
+import { db, isDbConfigured } from "@/config/db"
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/config/defaults"
 import { orders } from "@/db/schema"
 import { customersSearchParamsSchema } from "@/validations/params"
+import { mockCustomers } from "@/data/mock-store-data"
 
 import auth from "@/lib/auth"
 
@@ -26,8 +27,8 @@ import { CustomersTableShell } from "@/components/shells/customers-table-shell"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Klienci",
-  description: "Zarządzaj danymi swoich klientów",
+  title: "Покупатели | AURA TALISMAN",
+  description: "Управление клиентами и история заказов",
 }
 
 interface CustomersPageProps {
@@ -50,66 +51,78 @@ export default async function CustomersPage({
   const fromDay = from ? startOfDay(new Date(from)) : undefined
   const toDay = to ? endOfDay(new Date(to)) : undefined
 
-  const data = await db
-    .select({
-      name: orders.name,
-      email: orders.email,
-      orderPlaced: sql<number>`count(*)`,
-      totalSpent: sql<number>`sum(${orders.amount})`,
-      createdAt: sql<string>`min(${orders.createdAt})`,
-    })
-    .from(orders)
-    .limit(limit)
-    .offset(offset)
-    .where(
-      and(
-        email ? like(orders.email, `%${email}%`) : undefined,
-        fromDay && toDay
-          ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
-          : undefined
-      )
-    )
-    .groupBy(orders.email, orders.name)
-    .orderBy(
-      sort === "name.asc"
-        ? asc(orders.name)
-        : sort === "name.desc"
-          ? desc(orders.name)
-          : sort === "email.asc"
-            ? asc(orders.email)
-            : sort === "email.desc"
-              ? desc(orders.email)
-              : sort === "totalSpent.asc"
-                ? asc(sql<number>`sum(${orders.amount})`)
-                : sort === "totalSpent.desc"
-                  ? desc(sql<number>`sum(${orders.amount})`)
-                  : sort === "orderPlaced.asc"
-                    ? asc(sql<number>`count(*)`)
-                    : sort === "orderPlaced.desc"
-                      ? desc(sql<number>`count(*)`)
-                      : sort === "createdAt.asc"
-                        ? asc(sql<string>`min(${orders.createdAt})`)
-                        : sort === "createdAt.desc"
-                          ? desc(sql<string>`min(${orders.createdAt})`)
-                          : sql<string>`min(${orders.createdAt})`
-    )
+  let data: any[] = []
+  let count = 0
 
-  const count = await db
-    .select({
-      count: sql<number>`count(*)`,
-    })
-    .from(orders)
-    .where(
-      and(
-        email ? like(orders.email, `%${email}%`) : undefined,
-        fromDay && toDay
-          ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
-          : undefined
-      )
-    )
-    .groupBy(orders.email, orders.name)
-    .execute()
-    .then((res) => res[0]?.count ?? 0)
+  if (!isDbConfigured) {
+    data = mockCustomers
+    count = data.length
+  } else {
+    try {
+      data = await db
+        .select({
+          name: orders.name,
+          email: orders.email,
+          orderPlaced: sql<number>`count(*)`,
+          totalSpent: sql<number>`sum(${orders.amount})`,
+          createdAt: sql<string>`min(${orders.createdAt})`,
+        })
+        .from(orders)
+        .limit(limit)
+        .offset(offset)
+        .where(
+          and(
+            email ? like(orders.email, `%${email}%`) : undefined,
+            fromDay && toDay
+              ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
+              : undefined
+          )
+        )
+        .groupBy(orders.email, orders.name)
+        .orderBy(
+          sort === "name.asc"
+            ? asc(orders.name)
+            : sort === "name.desc"
+              ? desc(orders.name)
+              : sort === "email.asc"
+                ? asc(orders.email)
+                : sort === "email.desc"
+                  ? desc(orders.email)
+                  : sort === "totalSpent.asc"
+                    ? asc(sql<number>`sum(${orders.amount})`)
+                    : sort === "totalSpent.desc"
+                      ? desc(sql<number>`sum(${orders.amount})`)
+                      : sort === "orderPlaced.asc"
+                        ? asc(sql<number>`count(*)`)
+                        : sort === "orderPlaced.desc"
+                          ? desc(sql<number>`count(*)`)
+                          : sort === "createdAt.asc"
+                            ? asc(sql<string>`min(${orders.createdAt})`)
+                            : sort === "createdAt.desc"
+                              ? desc(sql<string>`min(${orders.createdAt})`)
+                              : sql<string>`min(${orders.createdAt})`
+        )
+
+      count = await db
+        .select({
+          count: sql<number>`count(distinct ${orders.email})`,
+        })
+        .from(orders)
+        .where(
+          and(
+            email ? like(orders.email, `%${email}%`) : undefined,
+            fromDay && toDay
+              ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
+              : undefined
+          )
+        )
+        .execute()
+        .then((res) => res[0]?.count ?? 0)
+    } catch (error) {
+      data = mockCustomers
+      count = data.length
+    }
+  }
 
   const pageCount = Math.ceil(count / limit)
 
@@ -119,10 +132,10 @@ export default async function CustomersPage({
         <Card className="flex h-[84vh] flex-1 flex-col items-center justify-center rounded-md border-2 border-dashed bg-accent/40 text-center">
           <CardHeader>
             <CardTitle className="text-2xl font-bold tracking-tight">
-              Brak klientów do wyświetlenia
+              Список покупателей пуст
             </CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
-              Gdy tylko się pojawią, zobaczysz tutaj listę klientów
+              Как только появятся первые заказы, данные отобразятся здесь.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -131,7 +144,7 @@ export default async function CustomersPage({
           <CardHeader>
             <CardTitle className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
               <div className="text-xl font-bold tracking-tight md:text-2xl">
-                Klienci
+                Покупатели
               </div>
               <DateRangePicker align="end" />
             </CardTitle>

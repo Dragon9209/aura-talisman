@@ -13,8 +13,8 @@ import { Sidebar } from "@/components/nav/back-office/sidebar"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Panel Administratora",
-  description: "Zaloguj się jako administrator aby zarządzać sklepem",
+  title: "Панель администратора | AURA TALISMAN",
+  description: "Управление интернет-магазином энергетических украшений AURA TALISMAN",
 }
 
 interface BackOfficeAdminLayoutProps {
@@ -29,12 +29,12 @@ export default async function BackOfficeAdminLayout({
     redirect(DEFAULT_UNAUTHENTICATED_REDIRECT)
 
   return (
-    <div className="flex h-screen w-full flex-col bg-muted/40">
+    <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <Sidebar navItems={adminNavItems} />
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <Header user={session?.user} navItems={adminNavItems} />
       </div>
-      <main className="sm:pl-6">{children}</main>
+      <main className="flex-1 pb-12">{children}</main>
     </div>
   )
 }

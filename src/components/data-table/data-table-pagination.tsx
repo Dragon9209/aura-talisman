@@ -22,13 +22,13 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex w-full flex-col items-center justify-between gap-4 overflow-auto px-2 py-1 sm:flex-row sm:gap-8">
       <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">
-        Zaznaczono {table.getFilteredSelectedRowModel().rows.length} z{" "}
-        {table.getFilteredRowModel().rows.length} pozycji
+        Выбрано {table.getFilteredSelectedRowModel().rows.length} из{" "}
+        {table.getFilteredRowModel().rows.length} строк
       </div>
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
         <div className="flex items-center space-x-2">
           <p className="whitespace-nowrap text-sm font-medium">
-            Pozycje na stronę
+            Строк на странице
           </p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -49,7 +49,7 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Strona {table.getState().pagination.pageIndex + 1} z{" "}
+          Страница {table.getState().pagination.pageIndex + 1} из{" "}
           {table.getPageCount() > 0 ? table.getPageCount() : 1}
         </div>
         <div className="flex items-center space-x-2">

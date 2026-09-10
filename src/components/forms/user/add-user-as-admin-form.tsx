@@ -68,30 +68,29 @@ export function AddUserAsAdminForm(): JSX.Element {
         switch (message) {
           case "exists":
             toast({
-              title: "Podany adres email jest już zarezerwowany",
-              description:
-                "Podaj inny adres email aby dokończyć dodawanie użytkownika",
+              title: "Пользователь с таким email уже существует",
+              description: "Укажите другой адрес электронной почты",
               variant: "destructive",
             })
             break
           case "success":
             toast({
-              title: "Użytkownik został dodany",
+              title: "Пользователь успешно добавлен",
             })
             router.push("/admin/uzytkownicy")
             break
           default:
             toast({
-              title: "Coś poszło nie tak",
-              description: "Spróbuj ponownie",
+              title: "Произошла ошибка",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
             console.error(message)
         }
       } catch (error) {
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте снова",
           variant: "destructive",
         })
         console.error(error)
@@ -113,7 +112,7 @@ export function AddUserAsAdminForm(): JSX.Element {
               <FormItem className="w-full">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="jan.kowalski@gmail.com" {...field} />
+                  <Input placeholder="user@auratalisman.kz" {...field} />
                 </FormControl>
                 <FormMessage className="pt-2 sm:text-sm" />
               </FormItem>
@@ -125,7 +124,7 @@ export function AddUserAsAdminForm(): JSX.Element {
             name="role"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Rola</FormLabel>
+                <FormLabel>Роль</FormLabel>
                 <Select
                   value={field.value}
                   onValueChange={(value: typeof field.value) =>
@@ -135,7 +134,7 @@ export function AddUserAsAdminForm(): JSX.Element {
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        placeholder="Wybierz rolę"
+                        placeholder="Выберите роль"
                         defaultValue={users.role.enumValues[0]}
                       />
                     </SelectTrigger>
@@ -144,7 +143,11 @@ export function AddUserAsAdminForm(): JSX.Element {
                     <SelectGroup>
                       {Object.values(users.role.enumValues).map((option) => (
                         <SelectItem key={option} value={option}>
-                          {option}
+                          {option === "administrator"
+                            ? "Администратор"
+                            : option === "klient"
+                              ? "Клиент / Покупатель"
+                              : option}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -162,7 +165,7 @@ export function AddUserAsAdminForm(): JSX.Element {
             name="password"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Hasło</FormLabel>
+                <FormLabel>Пароль</FormLabel>
                 <FormControl>
                   <PasswordInput placeholder="**********" {...field} />
                 </FormControl>
@@ -176,7 +179,7 @@ export function AddUserAsAdminForm(): JSX.Element {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Potwierdź hasło</FormLabel>
+                <FormLabel>Подтвердите пароль</FormLabel>
                 <FormControl>
                   <PasswordInput placeholder="**********" {...field} />
                 </FormControl>
@@ -189,7 +192,7 @@ export function AddUserAsAdminForm(): JSX.Element {
         <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isPending}
-            aria-label="dodaj użytkownika"
+            aria-label="добавить пользователя"
             className="w-fit"
           >
             {isPending ? (
@@ -198,20 +201,20 @@ export function AddUserAsAdminForm(): JSX.Element {
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>Dodawanie...</span>
+                <span>Добавление...</span>
               </>
             ) : (
-              <span>Dodaj</span>
+              <span>Добавить</span>
             )}
-            <span className="sr-only">Dodaj użytkownika</span>
+            <span className="sr-only">Добавить пользователя</span>
           </Button>
 
           <Link
             href="/admin/uzytkownicy"
             className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
-            aria-label="anuluj"
+            aria-label="отмена"
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

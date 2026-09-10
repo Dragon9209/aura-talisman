@@ -11,8 +11,8 @@ import { AddCategoryForm } from "@/components/forms/inventory/category/add-categ
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Dodaj nową kategorię",
-  description: "Dodaj nową kategorię produktów w swoim asortymencie",
+  title: "Добавить категорию | AURA TALISMAN",
+  description: "Добавление новой категории изделий в каталог",
 }
 
 export default async function NewCategoryPage(): Promise<JSX.Element> {
@@ -25,7 +25,7 @@ export default async function NewCategoryPage(): Promise<JSX.Element> {
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Dodaj nową kategorię
+            Добавить новую категорию
           </CardTitle>
         </CardHeader>
         <CardContent>

@@ -12,8 +12,8 @@ import { UpdateCategoryForm } from "@/components/forms/inventory/category/update
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Szczegóły kategorii",
-  description: "Zobacz i edytuj kategorię produktów",
+  title: "Редактирование категории | AURA TALISMAN",
+  description: "Просмотр и редактирование параметров категории",
 }
 
 interface AdminCategoryPageProps {
@@ -37,7 +37,7 @@ export default async function AdminCategoryPage({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Szczegóły kategorii
+            Редактирование категории
           </CardTitle>
         </CardHeader>
         <CardContent>

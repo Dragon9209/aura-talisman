@@ -10,6 +10,7 @@ import { type Subcategory } from "@/db/schema"
 import { useToast } from "@/hooks/use-toast"
 import { formatDate } from "@/lib/utils"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -53,7 +54,7 @@ export function SubcategoriesTableShell({
                 prev.length === data.length ? [] : data.map((row) => row.id)
               )
             }}
-            aria-label="Zaznacz wszystko"
+            aria-label="Выбрать все"
             className="translate-y-[2px]"
           />
         ),
@@ -68,7 +69,7 @@ export function SubcategoriesTableShell({
                   : prev.filter((id) => id !== row.original.id)
               )
             }}
-            aria-label="Zaznacz rząd"
+            aria-label="Выбрать строку"
             className="translate-y-[2px]"
           />
         ),
@@ -78,19 +79,33 @@ export function SubcategoriesTableShell({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Nazwa" />
+          <DataTableColumnHeader column={column} title="Название" />
         ),
       },
       {
         accessorKey: "categoryName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Kategoria" />
+          <DataTableColumnHeader column={column} title="Категория" />
         ),
+        cell: ({ cell }) => {
+          const raw = String(cell.getValue())
+          const categoryLabels: Record<string, string> = {
+            bransoletki: "Браслеты",
+            chetki: "Чётки и Малы",
+            naszyjniki: "Чокеры и Колье",
+            kolczyki: "Серьги и Кольца",
+          }
+          return (
+            <Badge variant="outline">
+              {categoryLabels[raw] ?? raw}
+            </Badge>
+          )
+        },
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Data dodania" />
+          <DataTableColumnHeader column={column} title="Дата добавления" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
@@ -98,7 +113,7 @@ export function SubcategoriesTableShell({
       {
         accessorKey: "updatedAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Data modyfikacji" />
+          <DataTableColumnHeader column={column} title="Дата изменения" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
@@ -109,7 +124,7 @@ export function SubcategoriesTableShell({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                aria-label="Rozwiń menu"
+                aria-label="Открыть меню"
                 variant="ghost"
                 className="flex size-8 p-0 data-[state=open]:bg-muted"
               >
@@ -119,11 +134,11 @@ export function SubcategoriesTableShell({
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href={`/admin/podkategorie/${row.original.id}`}>
-                  Edytuj
+                  Редактировать
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-destructive focus:text-destructive"
                 onClick={() => {
                   startTransition(async () => {
                     try {
@@ -136,21 +151,21 @@ export function SubcategoriesTableShell({
                       switch (message) {
                         case "success":
                           toast({
-                            title: "Podkategoria została usunięta",
+                            title: "Подкатегория удалена",
                           })
                           break
                         default:
                           toast({
-                            title: "Nie udało się usunąć podkategorii",
-                            description: "Spróbuj ponownie",
+                            title: "Не удалось удалить подкатегорию",
+                            description: "Попробуйте позже",
                             variant: "destructive",
                           })
                       }
                     } catch (error) {
                       console.error(error)
                       toast({
-                        title: "Coś poszło nie tak",
-                        description: "Spróbuj ponownie",
+                        title: "Ошибка при удалении",
+                        description: "Попробуйте позже",
                         variant: "destructive",
                       })
                     }
@@ -158,7 +173,7 @@ export function SubcategoriesTableShell({
                 }}
                 disabled={isPending}
               >
-                Usuń
+                Удалить
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -185,12 +200,12 @@ export function SubcategoriesTableShell({
 
       if (allSucceeded) {
         toast({
-          title: "Wybrane podkategorie zostały usunięte",
+          title: "Выбранные подкатегории удалены",
         })
       } else {
         toast({
-          title: "Niektóre podkategorie nie zostały usunięte",
-          description: "Spróbuj ponownie",
+          title: "Некоторые подкатегории не были удалены",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -199,8 +214,8 @@ export function SubcategoriesTableShell({
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -215,7 +230,7 @@ export function SubcategoriesTableShell({
       searchableColumns={[
         {
           id: "name",
-          title: "podkategorie",
+          title: "подкатегориям",
         },
       ]}
       newRowLink={`/admin/podkategorie/dodaj-podkategorie`}

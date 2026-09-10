@@ -23,7 +23,7 @@ export function formatBytes(
 }
 
 export function formatDate(date: Date | string | number) {
-  return new Intl.DateTimeFormat("pl-PL", {
+  return new Intl.DateTimeFormat("ru-RU", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -33,16 +33,17 @@ export function formatDate(date: Date | string | number) {
 export function formatPrice(
   price: number | string,
   options: {
-    currency?: "USD" | "EUR" | "GBP" | "BDT" | "PLN"
+    currency?: "USD" | "EUR" | "GBP" | "BDT" | "PLN" | "KZT"
     notation?: Intl.NumberFormatOptions["notation"]
   } = {}
 ) {
-  const { currency = "PLN", notation = "compact" } = options
+  const { currency = "KZT", notation = "standard" } = options
 
-  return new Intl.NumberFormat("pl-PL", {
+  return new Intl.NumberFormat("ru-KZ", {
     style: "currency",
     currency,
     notation,
+    maximumFractionDigits: 0,
   }).format(Number(price))
 }
 
@@ -59,46 +60,27 @@ export function truncate(str: string, length: number) {
 }
 
 export function slugify(str: string): string {
-  const polishChars: { [key: string]: string } = {
-    ą: "a",
-    ć: "c",
-    ę: "e",
-    ł: "l",
-    ń: "n",
-    ó: "o",
-    ś: "s",
-    ź: "z",
-    ż: "z",
+  const translitMap: { [key: string]: string } = {
+    а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "yo", ж: "zh",
+    з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o",
+    п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "kh", ц: "ts",
+    ч: "ch", ш: "sh", щ: "shch", ъ: "", ы: "y", ь: "", э: "e", ю: "yu",
+    я: "ya",
+    ą: "a", ć: "c", ę: "e", ł: "l", ń: "n", ó: "o", ś: "s", ź: "z", ż: "z",
   }
 
   return str
-    .split("")
-    .map((char) => polishChars[char] || char)
-    .join("")
     .toLowerCase()
+    .split("")
+    .map((char) => translitMap[char] || char)
+    .join("")
     .replace(/ /g, "-")
     .replace(/[^\w-]+/g, "")
     .replace(/--+/g, "-")
 }
 
 export function unslugify(str: string): string {
-  const polishCharsReverse: { [key: string]: string } = {
-    a: "ą",
-    c: "ć",
-    e: "ę",
-    l: "ł",
-    n: "ń",
-    o: "ó",
-    s: "ś",
-    z: "ź",
-    z: "ż",
-  }
-
-  return str
-    .replace(/-/g, " ") // Restore whitespace
-    .split("")
-    .map((char) => polishCharsReverse[char] || char)
-    .join("")
+  return str.replace(/-/g, " ")
 }
 
 export function toTitleCase(str: string) {
@@ -110,39 +92,45 @@ export function toTitleCase(str: string) {
 
 export function translateFilterNamesToPolish(name: string): string {
   const nameTranslations: Record<string, string> = {
-    orders: "zamówienia",
-    customers: "klientów",
-    products: "produkty",
-    category: "kategorie",
-    names: "nazwy",
+    orders: "заказам",
+    customers: "клиентам",
+    products: "товарам",
+    category: "категориям",
+    names: "названию",
+    subcategories: "подкатегориям",
+    tags: "тегам",
+    email: "email",
+    "adresy email": "email",
   }
 
-  return nameTranslations[name] || name
+  return nameTranslations[name.toLowerCase()] || name
 }
 
 export function translateColumnNamesToPolish(name: string): string {
   const nameTranslations: Record<string, string> = {
-    id: "Id",
-    name: "Nazwa",
+    id: "ID",
+    name: "Название",
     email: "Email",
-    role: "Rola",
-    customer: "Klient",
-    category: "Kategoria",
-    categoryName: "Kategoria",
-    subcategoryName: "Podkategoria",
-    price: "Cena",
-    status: "Status płatności",
-    state: "Status",
-    importance: "Priorytet",
-    inventory: "Dostępność",
-    quantity: "Ilość",
-    amount: "Wartość",
-    visibility: "Widoczność",
-    createdAt: "Data dodania",
-    updatedAt: "Data modyfikacji",
+    role: "Роль",
+    customer: "Клиент",
+    category: "Категория",
+    categoryName: "Категория",
+    subcategoryName: "Подкатегория",
+    price: "Цена",
+    status: "Статус оплаты",
+    state: "Статус",
+    importance: "Приоритет",
+    inventory: "Остаток",
+    quantity: "Количество",
+    amount: "Сумма",
+    visibility: "Видимость",
+    createdAt: "Дата добавления",
+    updatedAt: "Дата изменения",
+    totalspent: "Сумма покупок",
+    orderplaced: "Кол-во заказов",
   }
 
-  return nameTranslations[name] || name
+  return nameTranslations[name] || nameTranslations[name.toLowerCase()] || name
 }
 
 export function toSentenceCase(str: string) {

@@ -1,3 +1,4 @@
+import * as React from "react"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
@@ -5,13 +6,12 @@ import { env } from "@/env.mjs"
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/config/defaults"
 
 import auth from "@/lib/auth"
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AnalyticsDashboard } from "@/components/shells/analytics-dashboard"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Statystyki",
-  description: "Obserwuj statystyki i swoje wyniki sprzedażowe",
+  title: "Статистика и аналитика | AURA TALISMAN",
+  description: "Финансовые отчеты, аналитика продаж и метрики магазина AURA TALISMAN",
 }
 
 export default async function AdminStatsPage(): Promise<JSX.Element> {
@@ -21,14 +21,9 @@ export default async function AdminStatsPage(): Promise<JSX.Element> {
 
   return (
     <div className="px-2 py-5 sm:pl-14 sm:pr-6">
-      <Card className="rounded-md">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Statystyki
-          </CardTitle>
-        </CardHeader>
-        <CardContent>Strona w budowie</CardContent>
-      </Card>
+      <React.Suspense fallback={<div className="p-8 text-center text-muted-foreground">Загрузка аналитики...</div>}>
+        <AnalyticsDashboard />
+      </React.Suspense>
     </div>
   )
 }

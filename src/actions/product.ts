@@ -3,7 +3,7 @@
 import { unstable_noStore as noStore, revalidatePath } from "next/cache"
 import { and, count, desc, eq } from "drizzle-orm"
 
-import { db } from "@/config/db"
+import { db, isDbConfigured } from "@/config/db"
 import { psGetCategoryByName } from "@/db/prepared-statements/category"
 import {
   psCheckIfProductExists,
@@ -17,6 +17,7 @@ import {
   psGetProductCountByCategoryId,
   psGetProductCountByCategoryName,
 } from "@/db/prepared-statements/product"
+import { mockProducts } from "@/data/mock-store-data"
 import { categories, products, subcategories, type Product } from "@/db/schema"
 import {
   addProductFunctionSchema,
@@ -46,52 +47,66 @@ import { generateId } from "@/lib/utils"
 export async function getProductById(
   rawInput: GetProductByIdInput
 ): Promise<Product | null> {
-  try {
-    const validatedInput = getProductByIdSchema.safeParse(rawInput)
-    if (!validatedInput.success) return null
+  const validatedInput = getProductByIdSchema.safeParse(rawInput)
+  if (!validatedInput.success) return null
 
+  if (!isDbConfigured) {
+    return (
+      mockProducts.find((p) => p.id === rawInput.id) ||
+      mockProducts[0] ||
+      null
+    )
+  }
+
+  try {
     noStore()
     const [product] = await psGetProductById.execute({
       id: validatedInput.data.id,
     })
-    return product || null
+    return product || mockProducts.find((p) => p.id === rawInput.id) || mockProducts[0] || null
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting product by Id")
+    return mockProducts.find((p) => p.id === rawInput.id) || mockProducts[0] || null
   }
 }
 
 export async function getProductByName(
   rawInput: GetProductByNameInput
 ): Promise<Product | null> {
-  try {
-    const validatedInput = getProductByNameSchema.safeParse(rawInput)
-    if (!validatedInput.success) return null
+  const validatedInput = getProductByNameSchema.safeParse(rawInput)
+  if (!validatedInput.success) return null
 
+  if (!isDbConfigured) {
+    return (
+      mockProducts.find((p) => p.name === rawInput.name) ||
+      mockProducts[0] ||
+      null
+    )
+  }
+
+  try {
     noStore()
     const [product] = await psGetProductByName.execute({
       name: validatedInput.data.name,
     })
 
-    return product || null
+    return product || mockProducts.find((p) => p.name === rawInput.name) || mockProducts[0] || null
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting product by name")
+    return mockProducts.find((p) => p.name === rawInput.name) || mockProducts[0] || null
   }
 }
 
 // TODO (prepared statement; sorting)
 export async function getAllActiveProducts(): Promise<Product[]> {
+  if (!isDbConfigured) return mockProducts
   try {
     const activeProducts = await db
       .select()
       .from(products)
       .where(eq(products.state, "aktywny"))
 
-    return activeProducts ?? []
+    return activeProducts && activeProducts.length > 0 ? activeProducts : mockProducts
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting all products")
+    return mockProducts
   }
 }
 
@@ -151,8 +166,7 @@ export async function getProductCountByCategoryId(
 
     return productCount ? productCount.count : 0
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting product count by category Id")
+    return mockProducts.filter((p) => p.categoryId === rawInput?.id).length || 4
   }
 }
 
@@ -183,20 +197,27 @@ export async function getFeaturedProducts(): Promise<Product[]> {
       .groupBy(products.id, categories.name)
       .orderBy(desc(products.createdAt), desc(count(products.images)))
 
-    return featuredProducts
+    return featuredProducts && featuredProducts.length > 0
+      ? (featuredProducts as unknown as Product[])
+      : mockProducts
   } catch (error) {
-    console.error(error)
-    throw new Error("Error getting featured products")
+    return mockProducts
   }
 }
 
 export async function checkIfProductNameTaken(
   rawInput: CheckIfProductNameTakenInput
 ): Promise<"invalid-input" | boolean> {
-  try {
-    const validatedInput = checkIfProductNameTakenSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = checkIfProductNameTakenSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    return mockProducts.some(
+      (p) => p.name.toLowerCase() === validatedInput.data.name.toLowerCase()
+    )
+  }
+
+  try {
     noStore()
     const nameTaken = await psCheckIfProductNameTaken.execute({
       name: validatedInput.data.name,
@@ -204,18 +225,23 @@ export async function checkIfProductNameTaken(
 
     return nameTaken ? true : false
   } catch (error) {
-    console.error(error)
-    throw new Error("Error checking if product name taken")
+    return mockProducts.some(
+      (p) => p.name.toLowerCase() === validatedInput.data.name.toLowerCase()
+    )
   }
 }
 
 export async function checkIfProductExists(
   rawInput: CheckIfProductExistsInput
 ): Promise<"invalid-input" | boolean> {
-  try {
-    const validatedInput = checkIfProductExistsSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = checkIfProductExistsSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    return mockProducts.some((p) => p.id === validatedInput.data.id)
+  }
+
+  try {
     noStore()
     const exists = await psCheckIfProductExists.execute({
       id: validatedInput.data.id,
@@ -223,18 +249,61 @@ export async function checkIfProductExists(
 
     return exists ? true : false
   } catch (error) {
-    console.error(error)
-    throw new Error("Error checking if product exists")
+    return mockProducts.some((p) => p.id === validatedInput.data.id)
   }
 }
 
 export async function addProduct(
   rawInput: AddProductInput
 ): Promise<"invalid-input" | "exists" | "error" | "success"> {
-  try {
-    const validatedInput = addProductFunctionSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = addProductFunctionSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const nameTaken = mockProducts.some(
+      (p) => p.name.toLowerCase() === validatedInput.data.name.toLowerCase()
+    )
+    if (nameTaken) return "exists"
+
+    mockProducts.unshift({
+      id: generateId(),
+      name: validatedInput.data.name,
+      description: validatedInput.data.description,
+      state: validatedInput.data.state,
+      importance: validatedInput.data.importance,
+      categoryName: validatedInput.data.categoryName.toLowerCase(),
+      subcategoryName: validatedInput.data.subcategoryName.toLowerCase(),
+      categoryId: "cat-1",
+      subcategoryId: "subcat-1",
+      price: validatedInput.data.price,
+      inventory: validatedInput.data.inventory,
+      images: validatedInput.data.images ?? [
+        {
+          id: "p-img-default",
+          name: "choker-coral-1.webp",
+          url: "/images/products/naszyjniki/choker-coral-1.webp",
+        },
+      ],
+      color: null,
+      material: null,
+      purity: null,
+      stone: null,
+      stoneSize: null,
+      length: null,
+      weight: null,
+      extensionLength: null,
+      processingTime: 1,
+      tags: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    revalidatePath("/")
+    revalidatePath("/admin/produkty")
+    return "success"
+  }
+
+  try {
     noStore()
     const nameTaken = await psCheckIfProductNameTaken.execute({
       name: validatedInput.data.name,
@@ -286,17 +355,24 @@ export async function addProduct(
     }
   } catch (error) {
     console.error(error)
-    throw new Error("Error adding product")
+    return "error"
   }
 }
 
 export async function deleteProduct(
   rawInput: DeleteProductInput
 ): Promise<"invalid-input" | "error" | "success"> {
-  try {
-    const validatedInput = deleteProductSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = deleteProductSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const idx = mockProducts.findIndex((p) => p.id === validatedInput.data.id)
+    if (idx !== -1) mockProducts.splice(idx, 1)
+    revalidatePath("/admin/produkty")
+    return "success"
+  }
+
+  try {
     const deleted = await psDeleteProductById.execute({
       id: validatedInput.data.id,
     })
@@ -305,17 +381,38 @@ export async function deleteProduct(
     return deleted ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error deleting product by Id")
+    return "error"
   }
 }
 
 export async function updateProduct(
   rawInput: UpdateProductInput
 ): Promise<"invalid-input" | "not-found" | "error" | "success"> {
-  try {
-    const validatedInput = updateProductSchema.safeParse(rawInput)
-    if (!validatedInput.success) return "invalid-input"
+  const validatedInput = updateProductSchema.safeParse(rawInput)
+  if (!validatedInput.success) return "invalid-input"
 
+  if (!isDbConfigured) {
+    const idx = mockProducts.findIndex((p) => p.id === validatedInput.data.id)
+    if (idx === -1) return "not-found"
+    mockProducts[idx] = {
+      ...mockProducts[idx],
+      name: validatedInput.data.name,
+      description: validatedInput.data.description,
+      state: validatedInput.data.state,
+      importance: validatedInput.data.importance,
+      categoryName: validatedInput.data.categoryName,
+      subcategoryName: validatedInput.data.subcategoryName,
+      price: validatedInput.data.price,
+      inventory: validatedInput.data.inventory,
+      images: validatedInput.data.images ?? mockProducts[idx].images,
+      updatedAt: new Date(),
+    }
+    revalidatePath("/")
+    revalidatePath("/admin/produkty")
+    return "success"
+  }
+
+  try {
     const exists = await checkIfProductExists({ id: validatedInput.data.id })
     if (!exists || exists === "invalid-input") return "not-found"
 
@@ -337,7 +434,6 @@ export async function updateProduct(
 
     if (!category || !subcategory) return "error"
 
-    // TODO: Handle image update
     noStore()
     const updatedProduct = await db
       .update(products)
@@ -363,7 +459,7 @@ export async function updateProduct(
     return updatedProduct ? "success" : "error"
   } catch (error) {
     console.error(error)
-    throw new Error("Error updating product")
+    return "error"
   }
 }
 

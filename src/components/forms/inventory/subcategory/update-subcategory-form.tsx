@@ -65,43 +65,42 @@ export function UpdateSubcategoryForm({
         switch (message) {
           case "invalid-input":
             toast({
-              title: "Nieprawidłowy typ danych wejściowych",
+              title: "Неверный формат введенных данных",
               variant: "destructive",
             })
             break
           case "not-found":
             toast({
-              title: "Nie znaleziono kategorii",
-              description: "Szukana podkategoria nie istnieje",
+              title: "Подкатегория не найдена",
+              description: "Указанная подкатегория не существует",
               variant: "destructive",
             })
             break
           case "exists":
             toast({
-              title:
-                "Dla tej kategorii, podkategoria o podanej nazwie już istnieje",
-              description: "Wybierz inną nazwę i spróbuj ponownie",
+              title: "Для этой категории подкатегория с таким именем уже существует",
+              description: "Укажите другое название",
               variant: "destructive",
             })
             break
           case "success":
             toast({
-              title: "Podkategoria została zaktualizowana",
+              title: "Подкатегория успешно обновлена",
             })
             router.push("/admin/podkategorie")
             break
           default:
             toast({
-              title: "Nie udało się zaktualizować podkategorii",
-              description: "Spróbuj ponownie",
+              title: "Не удалось обновить подкатегорию",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
         }
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте снова",
           variant: "destructive",
         })
       }
@@ -115,7 +114,7 @@ export function UpdateSubcategoryForm({
         onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <FormItem className="w-full md:w-4/5 xl:w-2/3">
-          <FormLabel>Id</FormLabel>
+          <FormLabel>ID подкатегории</FormLabel>
           <FormControl>
             <Input
               type="text"
@@ -127,23 +126,33 @@ export function UpdateSubcategoryForm({
         </FormItem>
 
         <FormItem className="w-full md:w-4/5 xl:w-2/3">
-          <FormLabel>Kategoria</FormLabel>
+          <FormLabel>Родительская категория</FormLabel>
           <FormControl>
             <Input
               type="text"
               disabled
-              defaultValue={subcategory.categoryName}
+              defaultValue={
+                subcategory.categoryName === "bransoletki"
+                  ? "Браслеты"
+                  : subcategory.categoryName === "chetki"
+                    ? "Чётки и Малы"
+                    : subcategory.categoryName === "naszyjniki"
+                      ? "Чокеры и Колье"
+                      : subcategory.categoryName === "kolczyki"
+                        ? "Серьги и Кольца"
+                        : subcategory.categoryName
+              }
               {...form.register("categoryName")}
             />
           </FormControl>
         </FormItem>
 
         <FormItem className="w-full md:w-4/5 xl:w-2/3">
-          <FormLabel>Nazwa</FormLabel>
+          <FormLabel>Название</FormLabel>
           <FormControl>
             <Input
               type="text"
-              placeholder="Np. złote"
+              placeholder="Напр. 108 бусин"
               defaultValue={subcategory.name}
               {...form.register("name")}
             />
@@ -158,10 +167,10 @@ export function UpdateSubcategoryForm({
           name="description"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Opis</FormLabel>
+              <FormLabel>Описание</FormLabel>
               <FormControl className="min-h-[120px]">
                 <Textarea
-                  placeholder="Opis kategorii (opcjonalnie)"
+                  placeholder="Описание подкатегории (необязательно)"
                   defaultValue={subcategory.description ?? ""}
                   {...field}
                 />
@@ -176,7 +185,7 @@ export function UpdateSubcategoryForm({
         <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isUpdating}
-            aria-label="zapisz zmiany"
+            aria-label="сохранить изменения"
             className="w-fit"
           >
             {isUpdating ? (
@@ -185,20 +194,20 @@ export function UpdateSubcategoryForm({
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>Zapisywanie...</span>
+                <span>Сохранение...</span>
               </>
             ) : (
-              <span>Zapisz zmiany</span>
+              <span>Сохранить изменения</span>
             )}
-            <span className="sr-only">Zapisz zmiany</span>
+            <span className="sr-only">Сохранить изменения</span>
           </Button>
 
           <Link
             href="/admin/podkategorie"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
-            aria-label="anuluj"
+            aria-label="отмена"
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

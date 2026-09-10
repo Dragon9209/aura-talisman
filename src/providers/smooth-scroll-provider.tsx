@@ -11,7 +11,7 @@ export function SmoothScrollProvider({
   children,
 }: Readonly<SmoothScrollProviderProps>) {
   return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1.5, syncTouch: true }}>
+    <ReactLenis root options={{ lerp: 0.15, duration: 0.8, syncTouch: false }}>
       {children}
     </ReactLenis>
   )

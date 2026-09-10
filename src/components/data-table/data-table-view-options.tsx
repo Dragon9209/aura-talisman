@@ -26,17 +26,17 @@ export function DataTableViewOptions<TData>({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label="Wybierz kolumny"
+          aria-label="Настройка колонок"
           variant="outline"
           size="sm"
           className="ml-auto hidden h-8 lg:flex"
         >
           <MixerHorizontalIcon className="mr-2 size-4" />
-          Widok
+          Вид
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Wybierz kolumny</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-[170px]">
+        <DropdownMenuLabel>Настройка колонок</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

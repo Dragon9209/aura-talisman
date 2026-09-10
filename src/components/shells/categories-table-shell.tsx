@@ -10,6 +10,7 @@ import { type Category } from "@/db/schema"
 import { useToast } from "@/hooks/use-toast"
 import { formatDate } from "@/lib/utils"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -53,7 +54,7 @@ export function CategoriesTableShell({
                 prev.length === data.length ? [] : data.map((row) => row.id)
               )
             }}
-            aria-label="Zaznacz wszystko"
+            aria-label="Выбрать все"
             className="translate-y-[2px]"
           />
         ),
@@ -68,7 +69,7 @@ export function CategoriesTableShell({
                   : prev.filter((id) => id !== row.original.id)
               )
             }}
-            aria-label="Zaznacz rząd"
+            aria-label="Выбрать строку"
             className="translate-y-[2px]"
           />
         ),
@@ -78,19 +79,38 @@ export function CategoriesTableShell({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Nazwa" />
+          <DataTableColumnHeader column={column} title="Название" />
         ),
+        cell: ({ cell }) => {
+          const raw = String(cell.getValue())
+          const namesMap: Record<string, string> = {
+            bransoletki: "Браслеты",
+            chetki: "Чётки и Малы",
+            naszyjniki: "Чокеры и Колье",
+            kolczyki: "Серьги и Кольца",
+          }
+          return <span className="font-medium">{namesMap[raw] ?? raw}</span>
+        },
       },
       {
         accessorKey: "visibility",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Widoczność" />
+          <DataTableColumnHeader column={column} title="Видимость" />
         ),
+        cell: ({ cell }) => {
+          const vis = String(cell.getValue())
+          const isVisible = vis === "widoczna" || vis === "active"
+          return (
+            <Badge variant={isVisible ? "secondary" : "outline"}>
+              {isVisible ? "Отображается" : "Скрыта"}
+            </Badge>
+          )
+        },
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Data dodania" />
+          <DataTableColumnHeader column={column} title="Дата добавления" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
@@ -101,7 +121,7 @@ export function CategoriesTableShell({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                aria-label="Rozwiń menu"
+                aria-label="Открыть меню"
                 variant="ghost"
                 className="flex size-8 p-0 data-[state=open]:bg-muted"
               >
@@ -110,10 +130,10 @@ export function CategoriesTableShell({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild className="cursor-pointer">
-                <Link href={`/admin/kategorie/${row.original.id}`}>Edytuj</Link>
+                <Link href={`/admin/kategorie/${row.original.id}`}>Редактировать</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-destructive focus:text-destructive"
                 onClick={() => {
                   startTransition(async () => {
                     try {
@@ -126,21 +146,21 @@ export function CategoriesTableShell({
                       switch (message) {
                         case "success":
                           toast({
-                            title: "Kategoria została usunięta",
+                            title: "Категория удалена",
                           })
                           break
                         default:
                           toast({
-                            title: "Nie udało się usunąć kategorii",
-                            description: "Spróbuj ponownie",
+                            title: "Не удалось удалить категорию",
+                            description: "Попробуйте позже",
                             variant: "destructive",
                           })
                       }
                     } catch (error) {
                       console.error(error)
                       toast({
-                        title: "Coś poszło nie tak",
-                        description: "Spróbuj ponownie",
+                        title: "Ошибка при удалении",
+                        description: "Попробуйте позже",
                         variant: "destructive",
                       })
                     }
@@ -148,7 +168,7 @@ export function CategoriesTableShell({
                 }}
                 disabled={isPending}
               >
-                Usuń
+                Удалить
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -175,12 +195,12 @@ export function CategoriesTableShell({
 
       if (allSucceeded) {
         toast({
-          title: "Wybrane kategorie zostały usunięte",
+          title: "Выбранные категории удалены",
         })
       } else {
         toast({
-          title: "Niektóre kategorie nie zostały usunięte",
-          description: "Spróbuj ponownie",
+          title: "Некоторые категории не были удалены",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -189,8 +209,8 @@ export function CategoriesTableShell({
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -205,7 +225,7 @@ export function CategoriesTableShell({
       searchableColumns={[
         {
           id: "name",
-          title: "kategorie",
+          title: "категориям",
         },
       ]}
       newRowLink={`/admin/kategorie/dodaj-kategorie`}

@@ -76,7 +76,19 @@ export default function RootLayout({
   children,
 }: Readonly<RootLayoutProps>): JSX.Element {
   return (
-    <html lang="en" className="overflow-x-hidden overflow-y-scroll">
+    <html lang="ru" className="overflow-x-hidden overflow-y-scroll">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
         className={cn(
           "size-full bg-background font-sans text-foreground antialiased",

@@ -62,7 +62,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
                   >
-                    wybrano {selectedValues.size}
+                    выбрано {selectedValues.size}
                   </Badge>
                 ) : (
                   options
@@ -90,7 +90,7 @@ export function DataTableFacetedFilter<TData, TValue>({
             )}
           />
           <CommandList>
-            <CommandEmpty>Brak wyników</CommandEmpty>
+            <CommandEmpty>Ничего не найдено</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value)
@@ -143,7 +143,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     onSelect={() => column?.setFilterValue(undefined)}
                     className="justify-center text-center"
                   >
-                    Usuń filtry
+                    Сбросить фильтры
                   </CommandItem>
                 </CommandGroup>
               </>

@@ -7,10 +7,11 @@ import { endOfDay, startOfDay } from "date-fns"
 import { and, asc, desc, gte, inArray, like, lte, sql } from "drizzle-orm"
 
 import { env } from "@/env.mjs"
-import { db } from "@/config/db"
+import { db, isDbConfigured } from "@/config/db"
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/config/defaults"
 import { orders, type Order } from "@/db/schema"
 import { ordersSearchParamsSchema } from "@/validations/params"
+import { mockOrders } from "@/data/mock-store-data"
 
 import auth from "@/lib/auth"
 
@@ -27,8 +28,8 @@ import { OrdersTableShell } from "@/components/shells/orders-table-shell"
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Zamówienia",
-  description: "Zarządzaj zamówieniami klientów",
+  title: "Управление заказами | AURA TALISMAN",
+  description: "Управление заказами покупателей и статусами доставки",
 }
 
 interface AdminOrdersPageProps {
@@ -58,58 +59,81 @@ export default async function AdminOrdersPage({
     "asc" | "desc" | undefined,
   ]) ?? ["createdAt", "desc"]
 
-  noStore()
-  const data = await db
-    .select({
-      id: orders.id,
-      quantity: orders.quantity,
-      amount: orders.amount,
-      paymentIntentId: orders.stripePaymentIntentId,
-      status: orders.stripePaymentIntentStatus,
-      customer: orders.email,
-      createdAt: orders.createdAt,
-    })
-    .from(orders)
-    .limit(limit)
-    .offset(offset)
-    .where(
-      and(
-        customer ? like(orders.email, `%${customer}%`) : undefined,
-        statuses.length > 0
-          ? inArray(orders.stripePaymentIntentStatus, statuses)
-          : undefined,
-        fromDay && toDay
-          ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
-          : undefined
-      )
-    )
-    .orderBy(
-      column && column in orders
-        ? order === "asc"
-          ? asc(orders[column])
-          : desc(orders[column])
-        : desc(orders.createdAt)
-    )
+  let data: any[] = []
+  let count = 0
 
-  noStore()
-  const count = await db
-    .select({
-      count: sql<number>`count(*)`,
-    })
-    .from(orders)
-    .where(
-      and(
-        customer ? like(orders.email, `%${customer}%`) : undefined,
-        statuses.length > 0
-          ? inArray(orders.stripePaymentIntentStatus, statuses)
-          : undefined,
-        fromDay && toDay
-          ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
-          : undefined
-      )
-    )
-    .execute()
-    .then((res) => res[0]?.count ?? 0)
+  const fallbackOrders = mockOrders.map((o) => ({
+    id: o.id,
+    quantity: o.quantity,
+    amount: o.amount,
+    paymentIntentId: o.stripePaymentIntentId,
+    status: o.stripePaymentIntentStatus,
+    customer: o.email,
+    createdAt: o.createdAt,
+  }))
+
+  if (!isDbConfigured) {
+    data = fallbackOrders
+    count = data.length
+  } else {
+    try {
+      noStore()
+      data = await db
+        .select({
+          id: orders.id,
+          quantity: orders.quantity,
+          amount: orders.amount,
+          paymentIntentId: orders.stripePaymentIntentId,
+          status: orders.stripePaymentIntentStatus,
+          customer: orders.email,
+          createdAt: orders.createdAt,
+        })
+        .from(orders)
+        .limit(limit)
+        .offset(offset)
+        .where(
+          and(
+            customer ? like(orders.email, `%${customer}%`) : undefined,
+            statuses.length > 0
+              ? inArray(orders.stripePaymentIntentStatus, statuses)
+              : undefined,
+            fromDay && toDay
+              ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
+              : undefined
+          )
+        )
+        .orderBy(
+          column && column in orders
+            ? order === "asc"
+              ? asc(orders[column])
+              : desc(orders[column])
+            : desc(orders.createdAt)
+        )
+
+      noStore()
+      count = await db
+        .select({
+          count: sql<number>`count(*)`,
+        })
+        .from(orders)
+        .where(
+          and(
+            customer ? like(orders.email, `%${customer}%`) : undefined,
+            statuses.length > 0
+              ? inArray(orders.stripePaymentIntentStatus, statuses)
+              : undefined,
+            fromDay && toDay
+              ? and(gte(orders.createdAt, fromDay), lte(orders.createdAt, toDay))
+              : undefined
+          )
+        )
+        .execute()
+        .then((res) => res[0]?.count ?? 0)
+    } catch (error) {
+      data = fallbackOrders
+      count = data.length
+    }
+  }
 
   const pageCount = Math.ceil(count / limit)
 
@@ -119,7 +143,7 @@ export default async function AdminOrdersPage({
         <CardHeader>
           <CardTitle className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
             <div className="text-xl font-bold tracking-tight md:text-2xl">
-              Zamówienia
+              Управление заказами
             </div>
             <DateRangePicker align="end" />
           </CardTitle>

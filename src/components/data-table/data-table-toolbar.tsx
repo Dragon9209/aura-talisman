@@ -43,7 +43,7 @@ export function DataTableToolbar<TData>({
               table.getColumn(column.id ? String(column.id) : "") && (
                 <Input
                   key={String(column.id)}
-                  placeholder={`Filtruj ${translateFilterNamesToPolish(column.title)}..`}
+                  placeholder={`Поиск по ${translateFilterNamesToPolish(column.title)}...`}
                   value={
                     (table
                       .getColumn(String(column.id))
@@ -72,12 +72,12 @@ export function DataTableToolbar<TData>({
           )}
         {isFiltered && (
           <Button
-            aria-label="Zresetuj filtry"
+            aria-label="Сбросить фильтры"
             variant="ghost"
             className="h-8 px-2 lg:px-3"
             onClick={() => table.resetColumnFilters()}
           >
-            Zresetuj
+            Сбросить
             <Icons.close className="ml-2 size-4" aria-hidden="true" />
           </Button>
         )}
@@ -85,7 +85,7 @@ export function DataTableToolbar<TData>({
       <div className="flex items-center space-x-2">
         {deleteRowsAction && table.getSelectedRowModel().rows.length > 0 ? (
           <Button
-            aria-label="Usuń zaznaczone pozycje"
+            aria-label="Удалить выбранные строки"
             variant="outline"
             size="sm"
             className="h-8"
@@ -98,10 +98,10 @@ export function DataTableToolbar<TData>({
             disabled={isPending}
           >
             <Icons.delete className="mr-2 size-4" aria-hidden="true" />
-            Usuń
+            Удалить
           </Button>
         ) : newRowLink ? (
-          <Link aria-label="Dodaj pozycję" href={newRowLink}>
+          <Link aria-label="Добавить" href={newRowLink}>
             <div
               className={cn(
                 buttonVariants({
@@ -112,7 +112,7 @@ export function DataTableToolbar<TData>({
               )}
             >
               <Icons.plusCircle className="mr-2 size-4" aria-hidden="true" />
-              Dodaj
+              Добавить
             </div>
           </Link>
         ) : null}

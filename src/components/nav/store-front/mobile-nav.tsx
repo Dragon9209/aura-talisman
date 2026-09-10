@@ -20,6 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Icons } from "@/components/icons"
 import { MobileNavItem } from "@/components/nav/store-front/mobile-nav-item"
+import { TalismanLogo } from "@/components/brand/talisman-logo"
 
 interface MobileNavProps {
   navItems: NavItem[]
@@ -47,16 +48,10 @@ export function MobileNav({
         </Button>
       </SheetTrigger>
       <SheetContent side="left">
-        <div className="w-full px-7">
-          <Link
-            href="/"
-            className="flex items-center"
-            onClick={() => setIsOpen(false)}
-          >
-            <Icons.gem className="mr-2 size-4" aria-hidden="true" />
-            <span className="font-bold">{siteConfig.name}</span>
-            <span className="sr-only">Strona główna</span>
-          </Link>
+        <div className="w-full px-4 pt-2">
+          <div onClick={() => setIsOpen(false)}>
+            <TalismanLogo />
+          </div>
         </div>
 
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
@@ -64,7 +59,7 @@ export function MobileNav({
             <Accordion type="multiple" className="w-full">
               {navItems.map((item, index) => (
                 <AccordionItem key={index} value={item.title}>
-                  <AccordionTrigger className="text-sm capitalize">
+                  <AccordionTrigger className="text-sm font-medium">
                     {item.title}
                   </AccordionTrigger>
                   <AccordionContent>

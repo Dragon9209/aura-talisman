@@ -7,6 +7,7 @@ import Balancer from "react-wrap-balancer"
 import { env } from "@/env.mjs"
 import { db } from "@/config/db"
 import { products, type Product } from "@/db/schema"
+import { mockProducts } from "@/data/mock-store-data"
 import { getProductsSearchParamsSchema } from "@/validations/params"
 
 import { toTitleCase, unslugify } from "@/lib/utils"
@@ -26,7 +27,7 @@ export function generateMetadata({
   return {
     metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
     title: params.categoryName,
-    description: `Wszystkie produkty z kategorii ${unslugify(params.categoryName)}`,
+    description: `Коллекция авторских изделий из натуральных минералов: ${unslugify(params.categoryName)}`,
   }
 }
 
@@ -50,60 +51,72 @@ export default async function CategoryPage({
   ]) ?? ["createdAt", "desc"]
 
   noStore()
-  const data = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      description: products.description,
-      state: products.state,
-      importance: products.importance,
-      categoryName: products.categoryName,
-      subcategoryName: products.subcategoryName,
-      categoryId: products.categoryId,
-      subcategoryId: products.subcategoryId,
-      tags: products.tags,
-      price: products.price,
-      inventory: products.inventory,
-      images: products.images,
-      createdAt: products.createdAt,
-      updatedAt: products.updatedAt,
-    })
-    .from(products)
-    .limit(limit)
-    .offset(offset)
-    .where(
-      and(
-        state ? eq(products.state, state) : eq(products.state, "aktywny"),
-        minPrice ? gte(products.price, minPrice) : undefined,
-        maxPrice ? lte(products.price, maxPrice) : undefined,
-        categoryName ? eq(products.categoryName, categoryName) : undefined
-      )
-    )
-    .groupBy(products.id)
-    .orderBy(
-      column && column in products
-        ? order === "asc"
-          ? asc(products[column])
-          : desc(products[column])
-        : desc(products.createdAt)
-    )
+  let data: Product[] = []
+  let count = 0
 
-  noStore()
-  const count = await db
-    .select({
-      count: sql<number>`count(${products.id})`,
-    })
-    .from(products)
-    .where(
-      and(
-        state ? eq(products.state, state) : eq(products.state, "aktywny"),
-        minPrice ? gte(products.price, minPrice) : undefined,
-        maxPrice ? lte(products.price, maxPrice) : undefined,
-        categoryName ? eq(products.categoryName, categoryName) : undefined
+  try {
+    const fetched = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        description: products.description,
+        state: products.state,
+        importance: products.importance,
+        categoryName: products.categoryName,
+        subcategoryName: products.subcategoryName,
+        categoryId: products.categoryId,
+        subcategoryId: products.subcategoryId,
+        tags: products.tags,
+        price: products.price,
+        inventory: products.inventory,
+        images: products.images,
+        createdAt: products.createdAt,
+        updatedAt: products.updatedAt,
+      })
+      .from(products)
+      .limit(limit)
+      .offset(offset)
+      .where(
+        and(
+          state ? eq(products.state, state) : eq(products.state, "aktywny"),
+          minPrice ? gte(products.price, minPrice) : undefined,
+          maxPrice ? lte(products.price, maxPrice) : undefined,
+          categoryName ? eq(products.categoryName, categoryName) : undefined
+        )
       )
+      .groupBy(products.id)
+      .orderBy(
+        column && column in products
+          ? order === "asc"
+            ? asc(products[column])
+            : desc(products[column])
+          : desc(products.createdAt)
+      )
+
+    data = fetched && fetched.length > 0 ? (fetched as unknown as Product[]) : []
+    const countRes = await db
+      .select({
+        count: sql<number>`count(${products.id})`,
+      })
+      .from(products)
+      .where(
+        and(
+          state ? eq(products.state, state) : eq(products.state, "aktywny"),
+          minPrice ? gte(products.price, minPrice) : undefined,
+          maxPrice ? lte(products.price, maxPrice) : undefined,
+          categoryName ? eq(products.categoryName, categoryName) : undefined
+        )
+      )
+      .execute()
+      .then((res) => res[0]?.count ?? 0)
+    count = countRes
+  } catch (error) {
+    const filtered = mockProducts.filter(
+      (p) => !categoryName || p.categoryName === categoryName
     )
-    .execute()
-    .then((res) => res[0]?.count ?? 0)
+    data = filtered.length > 0 ? filtered : mockProducts
+    count = data.length
+  }
 
   const pageCount = Math.ceil(count / limit)
 
@@ -114,17 +127,33 @@ export default async function CategoryPage({
   return (
     <div className="py-5">
       <section>
-        <h2 className="text-2xl font-semibold tracking-tighter  text-foreground/80">
-          {toTitleCase(categoryName)}
+        <h2 className="text-2xl font-semibold tracking-tighter text-foreground/80">
+          {{
+            naszyjniki: "Чокеры и колье",
+            kolczyki: "Серьги и минералы",
+            bransoletki: "Браслеты-талисманы",
+            pierscionki: "Кольца и самоцветы",
+            chetki: "Чётки и малы",
+            inne: "Амулеты и обереги",
+          }[categoryName] ?? toTitleCase(categoryName)}
         </h2>
         <p className="font-medium text-muted-foreground">
-          <Balancer>{`Wszystkie produkty z kategorii ${categoryName}`}</Balancer>
+          <Balancer>{`Авторские изделия коллекции: ${
+            {
+              naszyjniki: "Чокеры и колье",
+              kolczyki: "Серьги и минералы",
+              bransoletki: "Браслеты-талисманы",
+              pierscionki: "Кольца и самоцветы",
+              chetki: "Чётки и малы",
+              inne: "Амулеты и обереги",
+            }[categoryName] ?? categoryName
+          }`}</Balancer>
         </p>
       </section>
 
       {/* TODO: Add product cards, style */}
       {/* TODO: Add pagination of results */}
-      <section className="grid grid-cols-4 gap-5 py-10">
+      <section className="grid grid-cols-1 gap-6 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {data.map((product: Product) => (
           <ProductCard key={product.id} product={product} />
         ))}

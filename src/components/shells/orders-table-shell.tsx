@@ -56,21 +56,31 @@ export function OrdersTableShell({
       {
         accessorKey: "status",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Status płatności" />
+          <DataTableColumnHeader column={column} title="Статус оплаты" />
         ),
         cell: ({ cell }) => {
+          const rawStatus = cell.getValue() as StripePaymentStatus
+          const statusLabels: Record<string, string> = {
+            succeeded: "Оплачен",
+            processing: "В обработке",
+            requires_payment_method: "Ожидает оплаты",
+            requires_confirmation: "Подтверждение",
+            requires_action: "Требует действия",
+            requires_capture: "Ожидает списания",
+            canceled: "Отменен",
+          }
           return (
             <Badge
               variant="outline"
               className={cn(
-                "pointer-events-none text-sm capitalize text-white",
+                "pointer-events-none text-xs font-medium text-white",
                 getStripePaymentStatusColor({
-                  status: cell.getValue() as StripePaymentStatus,
+                  status: rawStatus,
                   shade: 600,
                 })
               )}
             >
-              {String(cell.getValue())}
+              {statusLabels[rawStatus] ?? String(rawStatus)}
             </Badge>
           )
         },
@@ -78,26 +88,26 @@ export function OrdersTableShell({
       {
         accessorKey: "customer",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Klient" />
+          <DataTableColumnHeader column={column} title="Клиент" />
         ),
       },
       {
         accessorKey: "quantity",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Ilość" />
+          <DataTableColumnHeader column={column} title="Количество" />
         ),
       },
       {
         accessorKey: "amount",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Wartość" />
+          <DataTableColumnHeader column={column} title="Сумма" />
         ),
         cell: ({ cell }) => formatPrice(cell.getValue() as number),
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Data" />
+          <DataTableColumnHeader column={column} title="Дата" />
         ),
         cell: ({ cell }) => formatDate(cell.getValue() as Date),
         enableColumnFilter: false,
@@ -108,17 +118,17 @@ export function OrdersTableShell({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                aria-label="Rozwiń menu"
+                aria-label="Открыть меню"
                 variant="ghost"
                 className="flex size-8 p-0 data-[state=open]:bg-muted"
               >
                 <Icons.dotsHorizontal className="size-4" aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuContent align="end" className="w-[180px]">
               <DropdownMenuItem asChild>
                 <Link href={`/admin/zamowienia/${row.original.id}`}>
-                  Szczegóły zamówienia
+                  Детали заказа
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -127,7 +137,7 @@ export function OrdersTableShell({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Zobacz w Stripe
+                  Посмотреть в Stripe
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -148,7 +158,7 @@ export function OrdersTableShell({
           ? [
               {
                 id: "customer",
-                title: "customers",
+                title: "клиентам",
               },
             ]
           : []
@@ -156,7 +166,7 @@ export function OrdersTableShell({
       filterableColumns={[
         {
           id: "status",
-          title: "Status",
+          title: "status",
           options: stripePaymentStatuses,
         },
       ]}

@@ -67,22 +67,22 @@ export function UpdateUserAsAdminForm({
         switch (message) {
           case "success":
             toast({
-              title: "Dane użytkownika zostały zmienione",
+              title: "Данные пользователя обновлены",
             })
             router.push("/admin/uzytkownicy")
             break
           default:
             toast({
-              title: "Coś poszło nie tak",
-              description: "Spróbuj ponownie",
+              title: "Произошла ошибка",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
             console.error(message)
         }
       } catch (error) {
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте снова",
           variant: "destructive",
         })
         console.error(error)
@@ -102,7 +102,7 @@ export function UpdateUserAsAdminForm({
             name="id"
             render={() => (
               <FormItem className="w-full">
-                <FormLabel>Id</FormLabel>
+                <FormLabel>ID пользователя</FormLabel>
                 <FormControl>
                   <Input value={user.id} disabled />
                 </FormControl>
@@ -132,7 +132,7 @@ export function UpdateUserAsAdminForm({
             name="role"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Rola</FormLabel>
+                <FormLabel>Роль в системе</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
@@ -148,7 +148,11 @@ export function UpdateUserAsAdminForm({
                       <SelectGroup>
                         {Object.values(users.role.enumValues).map((option) => (
                           <SelectItem key={option} value={option}>
-                            {option}
+                            {option === "administrator"
+                              ? "Администратор"
+                              : option === "klient"
+                                ? "Клиент / Покупатель"
+                                : option}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -165,7 +169,7 @@ export function UpdateUserAsAdminForm({
             name="createdAt"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Data Rejestracji</FormLabel>
+                <FormLabel>Дата регистрации</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -182,7 +186,7 @@ export function UpdateUserAsAdminForm({
         <div className="flex items-center gap-2 pt-2">
           <Button
             disabled={isUpdating}
-            aria-label="zapisz zmiany"
+            aria-label="сохранить изменения"
             className="w-fit"
           >
             {isUpdating ? (
@@ -191,20 +195,20 @@ export function UpdateUserAsAdminForm({
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>Zapisywanie ...</span>
+                <span>Сохранение...</span>
               </>
             ) : (
-              <span>Zapisz zmiany</span>
+              <span>Сохранить изменения</span>
             )}
-            <span className="sr-only">Zapisz zmiany</span>
+            <span className="sr-only">Сохранить изменения</span>
           </Button>
 
           <Link
             href="/admin/uzytkownicy"
             className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
-            aria-label="anuluj"
+            aria-label="отмена"
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

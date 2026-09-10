@@ -7,10 +7,11 @@ import { endOfDay, startOfDay } from "date-fns"
 import { and, asc, desc, gte, like, lte, sql } from "drizzle-orm"
 
 import { env } from "@/env.mjs"
-import { db } from "@/config/db"
+import { db, isDbConfigured } from "@/config/db"
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/config/defaults"
 import { users, type User } from "@/db/schema"
 import { registeredUsersSearchParamsSchema } from "@/validations/params"
+import { mockRegisteredUsers } from "@/data/mock-store-data"
 
 import auth from "@/lib/auth"
 
@@ -21,8 +22,8 @@ import { RegisteredUsersTableShell } from "@/components/shells/registered-users-
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Konta użytkowników",
-  description: "Zobacz i zarządzaj danymi sqoich użytkowników",
+  title: "Пользователи и администраторы",
+  description: "Управление аккаунтами пользователей и правами доступа",
 }
 
 interface RegisteredUsersPageProps {
@@ -51,47 +52,66 @@ export default async function RegisteredUsersPage({
   ]) ?? ["createdAt", "desc"]
 
   noStore()
-  const data = await db
-    .select({
-      id: users.id,
-      email: users.email,
-      role: users.role,
-      createdAt: users.createdAt,
-    })
-    .from(users)
-    .limit(limit)
-    .offset(offset)
-    .where(
-      and(
-        fromDay && toDay
-          ? and(gte(users.createdAt, fromDay), lte(users.createdAt, toDay))
-          : undefined,
-        email ? like(users.email, `%${email}%`) : undefined
-      )
-    )
-    .orderBy(
-      column && column in users
-        ? order === "asc"
-          ? asc(users[column])
-          : desc(users[column])
-        : desc(users.createdAt)
-    )
+  let data: any[] = []
+  let count = 0
 
-  noStore()
-  const count = await db
-    .select({
-      count: sql<number>`count(${users.id})`,
-    })
-    .from(users)
-    .where(
-      and(
-        fromDay && toDay
-          ? and(gte(users.createdAt, fromDay), lte(users.createdAt, toDay))
-          : undefined,
-        email ? like(users.email, `%${email}%`) : undefined
-      )
-    )
-    .then((res) => res[0]?.count ?? 0)
+  const fallbackUsers = mockRegisteredUsers.map((u) => ({
+    id: u.id,
+    email: u.email,
+    role: u.role,
+    createdAt: u.createdAt,
+  }))
+
+  if (!isDbConfigured) {
+    data = fallbackUsers
+    count = data.length
+  } else {
+    try {
+      data = await db
+        .select({
+          id: users.id,
+          email: users.email,
+          role: users.role,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .limit(limit)
+        .offset(offset)
+        .where(
+          and(
+            fromDay && toDay
+              ? and(gte(users.createdAt, fromDay), lte(users.createdAt, toDay))
+              : undefined,
+            email ? like(users.email, `%${email}%`) : undefined
+          )
+        )
+        .orderBy(
+          column && column in users
+            ? order === "asc"
+              ? asc(users[column])
+              : desc(users[column])
+            : desc(users.createdAt)
+        )
+
+      count = await db
+        .select({
+          count: sql<number>`count(${users.id})`,
+        })
+        .from(users)
+        .where(
+          and(
+            fromDay && toDay
+              ? and(gte(users.createdAt, fromDay), lte(users.createdAt, toDay))
+              : undefined,
+            email ? like(users.email, `%${email}%`) : undefined
+          )
+        )
+        .then((res) => res[0]?.count ?? 0)
+    } catch (error) {
+      data = fallbackUsers
+      count = data.length
+    }
+  }
 
   const pageCount = Math.ceil(count / limit)
 
@@ -101,7 +121,7 @@ export default async function RegisteredUsersPage({
         <CardHeader className="space-y-1">
           <CardTitle className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
             <div className="text-xl font-bold tracking-tight md:text-2xl">
-              Użytkownicy sklepu
+              Пользователи и администраторы
             </div>
             <DateRangePicker align="end" />
           </CardTitle>

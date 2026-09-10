@@ -69,30 +69,30 @@ export function AddSubcategoryForm({
         switch (message) {
           case "exists":
             toast({
-              title: "Podana podkategoria już istnieje",
-              description: "Użyj innej nazwy",
+              title: "Такая подкатегория уже существует",
+              description: "Используйте другое название",
               variant: "destructive",
             })
             break
           case "success":
             toast({
-              title: "Podkategoria została dodana",
+              title: "Подкатегория успешно добавлена",
             })
             router.push("/admin/podkategorie")
             router.refresh()
             break
           default:
             toast({
-              title: "Błąd przy dodawaniu podkategorii",
-              description: "Spróbuj ponownie",
+              title: "Ошибка при добавлении подкатегории",
+              description: "Попробуйте позже",
               variant: "destructive",
             })
         }
       } catch (error) {
         console.error(error)
         toast({
-          title: "Coś poszło nie tak",
-          description: "Spróbuj ponownie",
+          title: "Произошла ошибка",
+          description: "Попробуйте позже",
           variant: "destructive",
         })
       }
@@ -110,7 +110,7 @@ export function AddSubcategoryForm({
           name="categoryName"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Kategoria</FormLabel>
+              <FormLabel>Категория</FormLabel>
               <Select
                 value={field.value}
                 onValueChange={(value: typeof field.value) =>
@@ -119,14 +119,22 @@ export function AddSubcategoryForm({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Wybierz kategorię" />
+                    <SelectValue placeholder="Выберите категорию" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   <SelectGroup>
                     {categories?.map((category) => (
                       <SelectItem key={category.id} value={category.name}>
-                        {category.name}
+                        {category.name === "bransoletki"
+                          ? "Браслеты"
+                          : category.name === "chetki"
+                            ? "Чётки и Малы"
+                            : category.name === "naszyjniki"
+                              ? "Чокеры и Колье"
+                              : category.name === "kolczyki"
+                                ? "Серьги и Кольца"
+                                : category.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -142,9 +150,9 @@ export function AddSubcategoryForm({
           name="name"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Nazwa</FormLabel>
+              <FormLabel>Название</FormLabel>
               <FormControl>
-                <Input type="text" placeholder="Np. złote" {...field} />
+                <Input type="text" placeholder="Напр. Из вулканической лавы" {...field} />
               </FormControl>
               <FormMessage className="sm:text-sm" />
             </FormItem>
@@ -156,11 +164,11 @@ export function AddSubcategoryForm({
           name="description"
           render={({ field }) => (
             <FormItem className="w-full md:w-4/5 xl:w-2/3">
-              <FormLabel>Opis</FormLabel>
+              <FormLabel>Описание</FormLabel>
 
               <FormControl className="min-h-[120px]">
                 <Textarea
-                  placeholder="Opis podkategorii (opcjonalnie)"
+                  placeholder="Описание подкатегории (необязательно)"
                   {...field}
                 />
               </FormControl>
@@ -172,7 +180,7 @@ export function AddSubcategoryForm({
         <div className=" flex items-center gap-2 pt-2">
           <Button
             disabled={isPending}
-            aria-label="Dodaj podkategorię"
+            aria-label="Добавить подкатегорию"
             className="w-fit"
           >
             {isPending ? (
@@ -181,19 +189,19 @@ export function AddSubcategoryForm({
                   className="mr-2 size-4 animate-spin"
                   aria-hidden="true"
                 />
-                <span>Dodawanie...</span>
+                <span>Сохранение...</span>
               </>
             ) : (
-              <span>Dodaj</span>
+              <span>Добавить</span>
             )}
-            <span className="sr-only">Dodaj podkategorię</span>
+            <span className="sr-only">Добавить подкатегорию</span>
           </Button>
 
           <Link
             href="/admin/podkategorie"
             className={cn(buttonVariants({ variant: "ghost" }), "w-fit")}
           >
-            Anuluj
+            Отмена
           </Link>
         </div>
       </form>

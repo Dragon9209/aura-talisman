@@ -58,7 +58,7 @@ export function HeaderSearch(): JSX.Element {
 
   return (
     <>
-      <CustomTooltip text="Wyszukiwanie produktu">
+      <CustomTooltip text="Поиск по изделиям и минералам">
         <Button
           variant="outline"
           size="icon"
@@ -66,7 +66,7 @@ export function HeaderSearch(): JSX.Element {
           onClick={() => setOpen((prev) => !prev)}
         >
           <Icons.search aria-hidden="true" className="size-4" />
-          <span className="sr-only">Szukaj wśród naszych produktów</span>
+          <span className="sr-only">Искать среди авторских талисманов</span>
         </Button>
       </CustomTooltip>
 
@@ -78,12 +78,12 @@ export function HeaderSearch(): JSX.Element {
         }}
       >
         <CommandInput
-          placeholder="Szukaj..."
+          placeholder="Поиск по минералам (лава, агат, чакры, четки)..."
           value={query}
           onValueChange={setQuery}
         />
         <CommandList>
-          <CommandEmpty>Brak wyników wyszukiwania</CommandEmpty>
+          <CommandEmpty>Ничего не найдено</CommandEmpty>
 
           {loading ? (
             <div className="space-y-1 overflow-hidden px-1 py-2">
@@ -95,7 +95,6 @@ export function HeaderSearch(): JSX.Element {
             data?.map((group) => (
               <CommandGroup
                 key={group.name}
-                className="capitalize"
                 heading={group.name}
               >
                 {group.products.map((item) => {

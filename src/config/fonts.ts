@@ -1,12 +1,7 @@
-import { Inter } from "next/font/google"
-import localFont from "next/font/local"
-
-export const fontInter = Inter({
-  subsets: ["latin"],
+export const fontInter = {
   variable: "--font-inter",
-})
+}
 
-export const fontHeading = localFont({
-  src: "../../public/fonts/cal-sans-semi-bold.woff2",
+export const fontHeading = {
   variable: "--font-heading",
-})
+}

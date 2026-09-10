@@ -6,10 +6,11 @@ import type { SearchParams } from "@/types"
 import { asc, desc, like, sql } from "drizzle-orm"
 
 import { env } from "@/env.mjs"
-import { db } from "@/config/db"
+import { db, isDbConfigured } from "@/config/db"
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/config/defaults"
 import { categories, type Category } from "@/db/schema"
 import { productCategoriesSearchParamsSchema } from "@/validations/params"
+import { mockCategories } from "@/data/mock-store-data"
 
 import auth from "@/lib/auth"
 
@@ -19,8 +20,8 @@ import { CategoriesTableShell } from "@/components/shells/categories-table-shell
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Kategorie",
-  description: "Zarządzaj kategoriami swoich produktów",
+  title: "Категории | AURA TALISMAN",
+  description: "Управление основными категориями каталога",
 }
 
 interface AdminCategoriesPageProps {
@@ -47,34 +48,60 @@ export default async function AdminCategoriesPage({
   ]) ?? ["createdAt", "desc"]
 
   noStore()
-  const data = await db
-    .select({
-      id: categories.id,
-      name: categories.name,
-      description: categories.description || null,
-      visibility: categories.visibility,
-      createdAt: categories.createdAt,
-    })
-    .from(categories)
-    .limit(limit)
-    .offset(offset)
-    .where(name ? like(categories.name, `%${name}%`) : undefined)
-    .orderBy(
-      column && column in categories
-        ? order === "asc"
-          ? asc(categories[column])
-          : desc(categories[column])
-        : desc(categories.createdAt)
-    )
+  let data: any[] = []
+  let count = 0
 
-  noStore()
-  const count = await db
-    .select({
-      count: sql<number>`count(${categories.id})`,
-    })
-    .from(categories)
-    .where(name ? like(categories.name, `%${name}%`) : undefined)
-    .then((res) => res[0]?.count ?? 0)
+  if (!isDbConfigured) {
+    data = mockCategories.map((c) => ({
+      id: c.id,
+      name: c.name,
+      description: c.description,
+      visibility: "widoczna" as const,
+      createdAt: c.createdAt,
+    }))
+    count = data.length
+  } else {
+    try {
+      noStore()
+      data = await db
+        .select({
+          id: categories.id,
+          name: categories.name,
+          description: categories.description || null,
+          visibility: categories.visibility,
+          createdAt: categories.createdAt,
+        })
+        .from(categories)
+        .limit(limit)
+        .offset(offset)
+        .where(name ? like(categories.name, `%${name}%`) : undefined)
+        .orderBy(
+          column && column in categories
+            ? order === "asc"
+              ? asc(categories[column])
+              : desc(categories[column])
+            : desc(categories.createdAt)
+        )
+
+      noStore()
+      count = await db
+        .select({
+          count: sql<number>`count(${categories.id})`,
+        })
+        .from(categories)
+        .where(name ? like(categories.name, `%${name}%`) : undefined)
+        .then((res) => res[0]?.count ?? 0)
+    } catch (error) {
+      data = mockCategories.map((c) => ({
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        visibility: "widoczna" as const,
+        createdAt: c.createdAt,
+      }))
+      count = data.length
+    }
+  }
 
   const pageCount = Math.ceil(count / limit)
 
@@ -83,7 +110,7 @@ export default async function AdminCategoriesPage({
       <Card className="rounded-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-xl font-bold tracking-tight md:text-2xl">
-            Kategorie
+            Категории магазина
           </CardTitle>
         </CardHeader>
         <CardContent>

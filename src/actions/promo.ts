@@ -1,12 +1,20 @@
 "use server"
 
-import crypto from "crypto"
+import { mockPromos, type PromoCode } from "@/data/mock-store-data"
 
-import { unstable_noStore as noStore, revalidatePath } from "next/cache"
-import { eq } from "drizzle-orm"
+export type { PromoCode }
 
-import { db } from "@/config/db"
+export async function getPromoById(rawInput?: { id: string }): Promise<PromoCode | null> {
+  if (!rawInput?.id) return mockPromos[0]
+  return (
+    mockPromos.find(
+      (p) =>
+        p.id === rawInput.id ||
+        p.code.toLowerCase() === rawInput.id.toLowerCase()
+    ) || mockPromos[0]
+  )
+}
 
-export async function getPromoById() {
-  return "TODO: Implement"
+export async function getAllPromos(): Promise<PromoCode[]> {
+  return mockPromos
 }
