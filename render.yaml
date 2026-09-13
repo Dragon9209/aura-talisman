@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: aura-talisman
+    env: node
+    plan: free
+    autoDeploy: true
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://aura-talisman.onrender.com
+      - key: DATABASE_URL
+        value: postgres://dummy:dummy@localhost:5432/dummy
+      - key: AUTH_SECRET
+        value: 12345678901234567890123456789012
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        value: pk_test_dummy
+      - key: STRIPE_API_KEY
+        value: sk_test_dummy
+      - key: STRIPE_WEBHOOK_SECRET
+        value: whsec_dummy
+      - key: RESEND_API_KEY
+        value: re_dummy
+      - key: RESEND_EMAIL_FROM
+        value: store@example.com
+      - key: RESEND_EMAIL_TO
+        value: admin@example.com
+      - key: UPLOADTHING_APP_ID
+        value: dummy
+      - key: UPLOADTHING_SECRET
+        value: dummy
